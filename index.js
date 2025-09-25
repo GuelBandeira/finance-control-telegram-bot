@@ -50,17 +50,17 @@ function doPost(e) {
       var textoMensagem = contents.callback_query.data;
 
       // Tratar callbacks dos botões inline
-      if (textoMensagem == "grafico_mensal") {
-         enviarGraficoMensal(id);
+      if (textoMensagem == "grafico_despesas_categorias") {
+         enviarGraficoDespesasCategorias(id);
          return;
-      } else if (textoMensagem == "grafico_receitas") {
-         enviarGraficoReceitas(id);
+      } else if (textoMensagem == "grafico_despesas_mensal") {
+         enviarGraficoDespesasMensal(id);
          return;
-      } else if (textoMensagem == "grafico_categorias") {
-         enviarGraficoCategorias(id);
+      } else if (textoMensagem == "grafico_receitas_categorias") {
+         enviarGraficoReceitasCategorias(id);
          return;
-      } else if (textoMensagem == "grafico_semanal") {
-         enviarGraficoSemanal(id);
+      } else if (textoMensagem == "grafico_receitas_mensal") {
+         enviarGraficoReceitasMensal(id);
          return;
       } else if (textoMensagem == "orcamento") {
          // Mostrar orçamento atual e submenu de opções
@@ -248,8 +248,8 @@ function doPost(e) {
                   "callback_data": "despesas"
                }],
                [{
-                  "text": "💰 Receitas",
-                  "callback_data": "receitas"
+                  "text": "💲 Adicionar Receita",
+                  "callback_data": "receita"
                }],
                [{
                   "text": "📊 Gráficos",
@@ -280,7 +280,7 @@ function doPost(e) {
                      "callback_data": "despesas"
                   }],
                   [{
-                     "text": "Adicionar Receita",
+                     "text": "💲 Adicionar Receita",
                      "callback_data": "receita"
                   }],
                   [{
@@ -302,7 +302,7 @@ function doPost(e) {
                      "callback_data": "despesas"
                   }],
                   [{
-                     "text": "Adicionar Receita",
+                     "text": "💲 Adicionar Receita",
                      "callback_data": "receita"
                   }],
                   [{
@@ -319,20 +319,20 @@ function doPost(e) {
          var opcoes = {
             "inline_keyboard": [
                [{
-                  "text": "📈 Gráfico Mensal",
-                  "callback_data": "grafico_mensal"
+                  "text": "📊 Despesas - Gráfico de categorias",
+                  "callback_data": "grafico_despesas_categorias"
                }],
                [{
-                  "text": "💰 Gráfico de Receitas",
-                  "callback_data": "grafico_receitas"
+                  "text": "📈 Despesas - Gráfico Mensal",
+                  "callback_data": "grafico_despesas_mensal"
                }],
                [{
-                  "text": "📊 Gráfico de Categorias",
-                  "callback_data": "grafico_categorias"
+                  "text": "💰 Receitas - Gráfico de categorias",
+                  "callback_data": "grafico_receitas_categorias"
                }],
                [{
-                  "text": "📅 Gráfico Semanal",
-                  "callback_data": "grafico_semanal"
+                  "text": "📊 Receitas - Gráfico Mensal",
+                  "callback_data": "grafico_receitas_mensal"
                }],
                [{
                   "text": "🔙 Voltar ao Menu",
@@ -374,7 +374,7 @@ function doPost(e) {
          }
          sendMessage(id, "📝 *Menu de Despesas:*\n\nEscolha uma opção ou envie uma despesa no formato:\n\n`Data - Descrição - Valor - Categoria`\n\n*Exemplos:*\n• `15/12/2024 - Almoço - 25,50 - Comida`\n• `Farmácia - 45,80 - Farmácia` (sem data = hoje)", opcoes);
          return;
-      } else if (textoMensagem == "receitas") {
+      } else if (textoMensagem == "receita") {
          // Mostrar submenu de receitas
          var opcoes = {
             "inline_keyboard": [
@@ -400,35 +400,7 @@ function doPost(e) {
                }]
             ]
          }
-         sendMessage(id, "💰 *Menu de Receitas:*\n\nEscolha uma opção ou envie uma receita no formato:\n\n 📝 *Como Adicionar uma Receita:*\n\nUse o formato:\n`Data - Categoria da Receita - Descrição - Valor`\n\n*Exemplos:*\n• `15/12/2024 - Trabalho - Salário - 3000,00`\n• `Trabalho - Freelance - 500,00` (sem data = hoje)", opcoes);
-         return;
-      } else if (textoMensagem == "adicionar_receita") {
-         // Mostrar instruções para adicionar receita
-         var opcoes = {
-            "inline_keyboard": [
-               [{
-                  "text": "➕ Adicionar Receita",
-                  "callback_data": "adicionar_receita"
-               }],
-               [{
-                  "text": "📊 Listar Receitas do Mês",
-                  "callback_data": "listar_receitas_mes"
-               }],
-               [{
-                  "text": "🏷️ Listar Receitas por Categoria",
-                  "callback_data": "listar_receitas_categoria"
-               }],
-               [{
-                  "text": "📈 Receitas por Categoria no Mês",
-                  "callback_data": "listar_receitas_categoria_mes"
-               }],
-               [{
-                  "text": "🔙 Voltar ao Menu",
-                  "callback_data": "ajuda"
-               }]
-            ]
-         }
-         sendMessage(id, "➕ *Adicionar Receita*\n\nPara adicionar uma receita, envie uma mensagem no formato:\n\n`Data - Categoria da Receita - Descrição - Valor`\n\n*Exemplos:*\n• `15/12/2024 - Trabalho - Salário - 3000,00`\n• `Trabalho - Freelance - 500,00` (sem data = hoje)\n\n*Categorias disponíveis:*\n• Trabalho", opcoes);
+         sendMessage(id, "💰 *Menu de Receitas:*\n\nEscolha uma opção ou envie uma receita no formato:\n\n`(Receita) - Data - Descrição - Valor - Categoria`\n\n*Exemplos:*\n• `(Receita) - 15/12/2024 - Salário - 3000,00 - Trabalho`\n• `(Receita) - Freelance - 500,00 - Trabalho` (sem data = hoje)", opcoes);
          return;
       } else if (textoMensagem == "adicionar_despesa") {
          // Mostrar instruções para adicionar despesa
@@ -461,6 +433,34 @@ function doPost(e) {
             ]
          }
          sendMessage(id, "➕ *Adicionar Despesa*\n\nPara adicionar uma despesa, envie uma mensagem no formato:\n\n`Data - Descrição - Valor - Categoria`\n\n*Exemplos:*\n• `15/12/2024 - Almoço - 25,50 - Comida`\n• `Farmácia - 45,80 - Farmácia` (sem data = hoje)\n\n*Dica:* Use o comando 'categorias' para ver as categorias disponíveis", opcoes);
+         return;
+      } else if (textoMensagem == "adicionar_receita") {
+         // Mostrar instruções para adicionar receita
+         var opcoes = {
+            "inline_keyboard": [
+               [{
+                  "text": "➕ Adicionar Receita",
+                  "callback_data": "adicionar_receita"
+               }],
+               [{
+                  "text": "📊 Listar Receitas do Mês",
+                  "callback_data": "listar_receitas_mes"
+               }],
+               [{
+                  "text": "🏷️ Listar Receitas por Categoria",
+                  "callback_data": "listar_receitas_categoria"
+               }],
+               [{
+                  "text": "📈 Receitas por Categoria no Mês",
+                  "callback_data": "listar_receitas_categoria_mes"
+               }],
+               [{
+                  "text": "🔙 Voltar ao Menu",
+                  "callback_data": "ajuda"
+               }]
+            ]
+         }
+         sendMessage(id, "➕ *Adicionar Receita*\n\nPara adicionar uma receita, envie uma mensagem no formato:\n\n`(Receita) - Data - Descrição - Valor - Categoria`\n\n*Exemplos:*\n• `(Receita) - 15/12/2024 - Salário - 3000,00 - Trabalho`\n• `(Receita) - Freelance - 500,00 - Trabalho` (sem data = hoje)", opcoes);
          return;
       } else if (textoMensagem == "listar_receitas_mes") {
          // Mostrar instruções para listar receitas do mês
@@ -572,7 +572,7 @@ function doPost(e) {
                "callback_data": "despesas"
             }],
             [{
-               "text": "Adicionar Receita",
+               "text": "💲 Adicionar Receita",
                "callback_data": "receita"
             }],
             [{
@@ -605,8 +605,8 @@ function doPost(e) {
                   "callback_data": "despesas"
                }],
                [{
-                  "text": "💰 Receitas",
-                  "callback_data": "receitas"
+                  "text": "💲 Adicionar Receita",
+                  "callback_data": "receita"
                }],
                [{
                   "text": "📊 Gráficos",
@@ -627,8 +627,8 @@ function doPost(e) {
                   "callback_data": "despesas"
                }],
                [{
-                  "text": "💰 Receitas",
-                  "callback_data": "receitas"
+                  "text": "💲 Adicionar Receita",
+                  "callback_data": "receita"
                }],
                [{
                   "text": "📊 Gráficos",
@@ -716,31 +716,40 @@ function doPost(e) {
          // Formato: "receitas categoria CATEGORIA" - processar como categoria apenas
          processarReceitasPorCategoria(id, textoMensagem);
       }
+   } else if (textoMensagem.includes("recriar gráfico receitas")) {
+      // Comando para forçar recriação dos gráficos de receitas
+      recriarGraficoReceitasCategorias(id_planilha, id);
+      recriarGraficoReceitasApunhadoAnual(id_planilha, id);
    } else {
       if (textoMensagem.includes('-')) {
          textoMensagemAux = textoMensagem.split('-');
 
-         // Verificar se é uma receita (4 campos) ou despesa (3-4 campos)
-         if (textoMensagemAux.length === 4) {
-            // Formato: Data - Categoria da Receita - Descrição - Valor
-            // Pode ser uma receita
-            var data = textoMensagemAux[0].trim();
-            var categoriaReceita = textoMensagemAux[1].trim();
+         // Verificar se é uma receita (formato: (Receita) - Data - Descrição - Valor - Categoria)
+         if (textoMensagemAux.length === 5) {
+            var primeiroCampo = textoMensagemAux[0].trim();
 
-            // Verificar se a categoria é "Trabalho" para confirmar que é uma receita
-            if (categoriaReceita.toLowerCase() === 'trabalho') {
-               processarReceita(id, textoReceitaComData);
+            // Verificar se começa com "(Receita)"
+            if (primeiroCampo.toLowerCase().includes('receita')) {
+               var data = textoMensagemAux[1].trim();
+               var descricao = textoMensagemAux[2].trim();
+               var valor = textoMensagemAux[3].trim();
+               var categoria = textoMensagemAux[4].trim();
+
+               var dadosReceita = [data, categoria, descricao, valor];
+               processarReceita(id, dadosReceita);
                return;
             }
-         } else if (textoMensagemAux.length === 3) {
-            // Formato: Categoria da Receita - Descrição - Valor (sem data = hoje)
-            var categoriaReceita = textoMensagemAux[0].trim();
+         } else if (textoMensagemAux.length === 4) {
+            var primeiroCampo = textoMensagemAux[0].trim();
 
-            // Verificar se a categoria é "Trabalho" para confirmar que é uma receita
-            if (categoriaReceita.toLowerCase() === 'trabalho') {
-               // Adicionar data de hoje no início
-               var textoReceitaComData = [dateNow_sem_hora(), categoriaReceita, textoMensagemAux[1].trim(), textoMensagemAux[2].trim()];
-               processarReceita(id, textoReceitaComData);
+            // Verificar se começa com "(Receita)" (sem data = hoje)
+            if (primeiroCampo.toLowerCase().includes('receita')) {
+               var descricao = textoMensagemAux[1].trim();
+               var valor = textoMensagemAux[2].trim();
+               var categoria = textoMensagemAux[3].trim();
+
+               var dadosReceita = [dateNow_sem_hora(), categoria, descricao, valor];
+               processarReceita(id, dadosReceita);
                return;
             }
          }
@@ -841,8 +850,8 @@ function doPost(e) {
                   "callback_data": "despesas"
                }],
                [{
-                  "text": "💰 Receitas",
-                  "callback_data": "receitas"
+                  "text": "💲 Adicionar Receita",
+                  "callback_data": "receita"
                }],
                [{
                   "text": "📊 Gráficos",
@@ -850,7 +859,7 @@ function doPost(e) {
                }]
             ]
          }
-         sendMessage(id, "🤖 *Comandos Disponíveis:*\n\nEscolha uma opção ou envie uma despesa no formato:\n\n 📝 *Como Adicionar uma Despesa:*\n\nUse o formato:\n`Data - Descrição - Valor - Categoria`\n\n*Exemplos:*\n• `15/12/2024 - Almoço - 25,50 - Comida`\n• `Farmácia - 45,80 - Farmácia` (sem data = hoje)\n\n 💰 *Como Adicionar uma Receita:*\n\nUse o formato:\n`Data - Categoria da Receita - Descrição - Valor`\n\n*Exemplos:*\n• `15/12/2024 - Trabalho - Salário - 3000,00`\n• `Trabalho - Freelance - 500,00` (sem data = hoje)", opcoes);
+         sendMessage(id, "🤖 *Comandos Disponíveis:*\n\nEscolha uma opção ou envie uma despesa no formato:\n\n 📝 *Como Adicionar uma Despesa:*\n\nUse o formato:\n`Data - Descrição - Valor - Categoria`\n\n*Exemplos:*\n• `15/12/2024 - Almoço - 25,50 - Comida`\n• `Farmácia - 45,80 - Farmácia` (sem data = hoje)\n\n 💰 *Como Adicionar uma Receita:*\n\nUse o formato:\n`(Receita) - Data - Descrição - Valor - Categoria`\n\n*Exemplos:*\n• `(Receita) - 15/12/2024 - Salário - 3000,00 - Trabalho`\n• `(Receita) - Freelance - 500,00 - Trabalho` (sem data = hoje)", opcoes);
       }
    }
 }
@@ -1385,50 +1394,46 @@ function capturarGraficoExistente(idPlanilha, month, year, id) {
 }
 
 function enviarGraficoReceitas(id) {
-   sendMessage(id, "✏️ *Processando gráfico de receitas...*");
+   sendMessage(id, "✏️ *Processando gráfico mensal...*");
 
    try {
       var dateNow = new Date();
+      var month = dateNow.getMonth() + 1;
       var year = dateNow.getFullYear();
 
-      // Tentar capturar o gráfico existente da planilha
-      var imagemGrafico = capturarGraficoReceitas(id_planilha, year, id);
+      // Tentar primeiro capturar o gráfico existente da planilha
+      var imagemGrafico = capturarGraficoExistente(id_planilha, month, year, id);
 
       if (imagemGrafico) {
          // Se conseguiu capturar o gráfico existente, enviar
-         var caption = `Gráfico "Receita - Apunhado anual" - ${year} - Gráfico atualizado da sua planilha`;
+         var caption = `Gráfico "Receitas - Apunhado Mensal" - ${month}/${year} - Gráfico atualizado da sua planilha`;
          sendPhoto(id, imagemGrafico, caption);
          return;
       }
 
       // Se não conseguiu capturar, criar um novo gráfico como fallback
-      sendMessage(id, "Gráfico de receitas existente não encontrado. Criando gráfico temporário...");
+      sendMessage(id, "Gráfico existente não encontrado. Criando gráfico temporário...");
 
       // Abrir a planilha de receitas
       var planilha = SpreadsheetApp.openById(id_planilha).getSheetByName("Receitas");
-
-      if (!planilha) {
-         sendMessage(id, "❌ *Erro:* Aba 'Receitas' não encontrada na planilha.\n\nPor favor, crie uma aba chamada 'Receitas' com as colunas necessárias.");
-         return;
-      }
-
       var dados = planilha.getDataRange().getValues();
 
-      // Filtrar dados do ano atual
+      // Filtrar dados do mês atual
       var categorias = {};
 
       for (var i = 1; i < dados.length; i++) { // Pular cabeçalho
-         var dataReceita = dados[i][1]; // Coluna da data
-         var valor = parseFloat(dados[i][4]); // Coluna do valor da receita
-         var categoria = dados[i][2]; // Coluna da categoria da receita
+         var dataReceita = dados[i][1]; // Coluna da data da receita
+         var valor = parseFloat(dados[i][3]); // Coluna do valor
+         var categoria = dados[i][4]; // Coluna da categoria
 
          if (dataReceita && valor && categoria) {
-            // Verificar se é do ano atual
+            // Verificar se é do mês atual
             if (typeof dataReceita === 'string' && dataReceita.includes('/')) {
                var partesData = dataReceita.split('/');
+               var mesReceita = parseInt(partesData[1]);
                var anoReceita = parseInt(partesData[2]);
 
-               if (anoReceita === year) {
+               if (mesReceita === month && anoReceita === year) {
                   if (categorias[categoria]) {
                      categorias[categoria] += valor;
                   } else {
@@ -1440,7 +1445,7 @@ function enviarGraficoReceitas(id) {
       }
 
       if (Object.keys(categorias).length === 0) {
-         sendMessage(id, "📊 *Nenhuma receita encontrada para o ano atual.*");
+         sendMessage(id, "📊 *Nenhuma receita encontrada para o mês atual.*");
          return;
       }
 
@@ -1456,21 +1461,21 @@ function enviarGraficoReceitas(id) {
       });
 
       // Criar gráfico usando Google Charts como fallback
-      var chartUrl = criarGraficoReceitasGoogleCharts(dadosGrafico, year);
+      var chartUrl = criarGraficoGoogleCharts(dadosGrafico, month, year);
 
       if (chartUrl) {
-         var caption = `Gráfico de Receitas - ${year} - `;
+         var caption = `Gráfico de Receitas - ${month}/${year} - `;
          for (var i = 0; i < dadosGrafico.length; i++) {
             caption += `${dadosGrafico[i][0]}: R$ ${dadosGrafico[i][1].toFixed(2)} | `;
          }
 
          sendPhoto(id, chartUrl, caption);
       } else {
-         sendMessage(id, "❌ *Erro ao gerar o gráfico de receitas. Tente novamente.*");
+         sendMessage(id, "❌ *Erro ao gerar o gráfico. Tente novamente.*");
       }
 
    } catch (error) {
-      sendMessage(id, "❌ *Erro ao gerar gráfico de receitas:* " + error.message);
+      sendMessage(id, "❌ *Erro ao gerar gráfico:* " + error.message);
    }
 }
 
@@ -1782,129 +1787,34 @@ function criarGraficoCategoriasGoogleCharts(dados, year) {
    }
 }
 
-function enviarGraficoSemanal(id) {
-   sendMessage(id, "✏️ *Processando gráfico semanal...*");
+// Funções de captura de gráficos específicos
 
-   try {
-      var dateNow = new Date();
-      var year = dateNow.getFullYear();
-      var week = getWeekNumber(dateNow);
-
-      // Tentar capturar o gráfico existente da planilha
-      var imagemGrafico = capturarGraficoSemanal(id_planilha, year, week, id);
-
-      if (imagemGrafico) {
-         // Se conseguiu capturar o gráfico existente, enviar
-         var caption = `Gráfico "Gastos - Apunhado Semanal"`;
-         sendPhoto(id, imagemGrafico, caption);
-         return;
-      }
-
-      // Se não conseguiu capturar, criar um novo gráfico como fallback
-      sendMessage(id, "Gráfico semanal existente não encontrado. Criando gráfico temporário...");
-
-      // Abrir a planilha de despesas
-      var planilha = SpreadsheetApp.openById(id_planilha).getSheetByName("Despesas");
-
-      if (!planilha) {
-         sendMessage(id, "❌ *Erro:* Aba 'Despesas' não encontrada na planilha.\n\nPor favor, crie uma aba chamada 'Despesas' com as colunas necessárias.");
-         return;
-      }
-
-      var dados = planilha.getDataRange().getValues();
-
-      // Filtrar dados da semana atual
-      var categorias = {};
-
-      for (var i = 1; i < dados.length; i++) { // Pular cabeçalho
-         var dataDespesa = dados[i][1]; // Coluna da data da compra
-         var valor = parseFloat(dados[i][3]); // Coluna do valor
-         var categoria = dados[i][4]; // Coluna da categoria
-
-         if (dataDespesa && valor && categoria) {
-            // Verificar se é da semana atual
-            if (typeof dataDespesa === 'string' && dataDespesa.includes('/')) {
-               var partesData = dataDespesa.split('/');
-               var diaDespesa = parseInt(partesData[0]);
-               var mesDespesa = parseInt(partesData[1]);
-               var anoDespesa = parseInt(partesData[2]);
-
-               // Criar objeto Date para a despesa
-               var dataDespesaObj = new Date(anoDespesa, mesDespesa - 1, diaDespesa);
-               var semanaDespesa = getWeekNumber(dataDespesaObj);
-
-               if (semanaDespesa === week && anoDespesa === year) {
-                  if (categorias[categoria]) {
-                     categorias[categoria] += valor;
-                  } else {
-                     categorias[categoria] = valor;
-                  }
-               }
-            }
-         }
-      }
-
-      if (Object.keys(categorias).length === 0) {
-         sendMessage(id, "📊 *Nenhuma despesa encontrada para a semana atual.*");
-         return;
-      }
-
-      // Criar dados para o gráfico
-      var dadosGrafico = [];
-      for (var cat in categorias) {
-         dadosGrafico.push([cat, categorias[cat]]);
-      }
-
-      // Ordenar por valor (maior para menor)
-      dadosGrafico.sort(function (a, b) {
-         return b[1] - a[1];
-      });
-
-      // Criar gráfico usando Google Charts como fallback
-      var chartUrl = criarGraficoSemanalGoogleCharts(dadosGrafico, week, year);
-
-      if (chartUrl) {
-         var caption = `Gráfico Semanal - Semana ${week} de ${year} - `;
-         for (var i = 0; i < dadosGrafico.length; i++) {
-            caption += `${dadosGrafico[i][0]}: R$ ${dadosGrafico[i][1].toFixed(2)} | `;
-         }
-
-         sendPhoto(id, chartUrl, caption);
-      } else {
-         sendMessage(id, "❌ *Erro ao gerar o gráfico semanal. Tente novamente.*");
-      }
-
-   } catch (error) {
-      sendMessage(id, "❌ *Erro ao gerar gráfico semanal:* " + error.message);
-   }
-}
-
-function capturarGraficoSemanal(idPlanilha, year, week, id) {
+function capturarGraficoDespesasCategorias(idPlanilha, year, id) {
    try {
       var planilha = SpreadsheetApp.openById(idPlanilha);
 
-      // Procurar especificamente na aba "Resumo semanal"
-      var abaResumoSemanal = planilha.getSheetByName("Resumo semanal");
+      // Procurar especificamente na aba "Resumo mensal"
+      var abaResumoMensal = planilha.getSheetByName("Resumo mensal");
 
-      if (!abaResumoSemanal) {
-         sendMessage(id, "Aba 'Resumo semanal' não encontrada");
+      if (!abaResumoMensal) {
+         sendMessage(id, "Aba 'Resumo mensal' não encontrada");
          return null;
       }
 
       // Procurar por gráficos na aba
-      var graficos = abaResumoSemanal.getCharts();
+      var graficos = abaResumoMensal.getCharts();
 
       if (graficos.length === 0) {
-         sendMessage(id, "Nenhum gráfico encontrado na aba 'Resumo semanal'");
+         sendMessage(id, "Nenhum gráfico encontrado na aba 'Resumo mensal'");
          return null;
       }
 
-      // Procurar pelo gráfico específico "Gastos - Apunhado Semanal"
+      // Procurar pelo gráfico específico "Gastos - Categorias"
       var graficoEncontrado = null;
       for (var i = 0; i < graficos.length; i++) {
          try {
             var nomeGrafico = graficos[i].getOptions().get('title');
-            if (nomeGrafico && nomeGrafico.includes("Gastos - Apunhado Semanal")) {
+            if (nomeGrafico && nomeGrafico.includes("Gastos - Categorias")) {
                graficoEncontrado = graficos[i];
                break;
             }
@@ -1919,7 +1829,7 @@ function capturarGraficoSemanal(idPlanilha, year, week, id) {
       // Se não encontrou o gráfico específico, usar o primeiro disponível
       if (!graficoEncontrado) {
          graficoEncontrado = graficos[0];
-         sendMessage(id, "Gráfico 'Gastos - Apunhado Semanal' não encontrado, usando primeiro gráfico disponível");
+         sendMessage(id, "Gráfico 'Gastos - Categorias' não encontrado, usando primeiro gráfico disponível");
       }
 
       var grafico = graficoEncontrado;
@@ -1928,13 +1838,13 @@ function capturarGraficoSemanal(idPlanilha, year, week, id) {
       var imagem = grafico.getBlob();
 
       if (!imagem) {
-         sendMessage(id, "Não foi possível capturar a imagem do gráfico semanal");
+         sendMessage(id, "Não foi possível capturar a imagem do gráfico de categorias");
          return null;
       }
 
       // Salvar no Drive e criar link público
       try {
-         var nomeArquivo = `grafico_semanal_${week}_${year}_${Date.now()}.png`;
+         var nomeArquivo = `grafico_categorias_${year}_${Date.now()}.png`;
          var arquivo = DriveApp.createFile(imagem);
          arquivo.setName(nomeArquivo);
 
@@ -1946,47 +1856,170 @@ function capturarGraficoSemanal(idPlanilha, year, week, id) {
          return url;
 
       } catch (e) {
-         sendMessage(id, "❌ *Erro ao salvar gráfico semanal no Drive:* " + e.message);
+         sendMessage(id, "❌ *Erro ao salvar gráfico de categorias no Drive:* " + e.message);
          return null;
       }
 
    } catch (error) {
-      sendMessage(id, "❌ *Erro ao capturar gráfico semanal:* " + error.message);
+      sendMessage(id, "❌ *Erro ao capturar gráfico de categorias:* " + error.message);
       return null;
    }
 }
 
-function criarGraficoSemanalGoogleCharts(dados, week, year) {
+function capturarGraficoReceitasCategorias(idPlanilha, year, id) {
    try {
-      // Usar Google Charts API para criar gráfico de pizza
-      var valores = dados.map(function (d) { return d[1]; });
-      var categorias = dados.map(function (d) { return d[0]; });
+      var planilha = SpreadsheetApp.openById(idPlanilha);
 
-      // Calcular totais para porcentagens
-      var total = valores.reduce(function (a, b) { return a + b; }, 0);
+      // Procurar especificamente na aba "Painel de receitas"
+      var abaPainelReceitas = planilha.getSheetByName("Painel de receitas");
 
-      // Criar URL do gráfico usando Google Charts API
-      var chartUrl = "https://chart.googleapis.com/chart?" +
-         "cht=p3" + // Gráfico de pizza 3D
-         "&chs=600x400" + // Tamanho
-         "&chd=t:" + valores.join(',') + // Dados
-         "&chl=" + categorias.map(function (cat) { return encodeURIComponent(cat); }).join('|') + // Labels
-         "&chtt=Gastos%20Semana%20" + week + "%20" + year + // Título
-         "&chco=EA4335,4285F4,FBBC05,34A853,FF6D01,46BDC6,7B1FA2,FF5722,795548,607D8B" + // Cores (vermelho primeiro para gastos)
-         "&chf=bg,s,FFFFFF" + // Fundo branco
-         "&chma=0,0,0,0" + // Margens
-         "&chdlp=b" + // Posição da legenda
-         "&chdls=000000,12" + // Cor e tamanho dos labels
-         "&chxt=x,y" + // Eixos
-         "&chxl=0:|Total:%20R$%20" + total.toFixed(2) + "|1:|Semana%20" + week + "%20" + year; // Labels dos eixos
+      if (!abaPainelReceitas) {
+         sendMessage(id, "Aba 'Painel de receitas' não encontrada");
+         return null;
+      }
 
-      return chartUrl;
+      // Procurar por gráficos na aba
+      var graficos = abaPainelReceitas.getCharts();
+
+      if (graficos.length === 0) {
+         sendMessage(id, "Nenhum gráfico encontrado na aba 'Painel de receitas'");
+         return null;
+      }
+
+      // Procurar pelo gráfico específico "Receitas - Categorias"
+      var graficoEncontrado = null;
+      for (var i = 0; i < graficos.length; i++) {
+         try {
+            var nomeGrafico = graficos[i].getOptions().get('title');
+            if (nomeGrafico && nomeGrafico.includes("Receitas - Categorias")) {
+               graficoEncontrado = graficos[i];
+               break;
+            }
+         } catch (e) {
+            // Se não conseguir pegar o nome, usar o primeiro gráfico
+            if (i === 0) {
+               graficoEncontrado = graficos[i];
+            }
+         }
+      }
+
+      // Se não encontrou o gráfico específico, usar o primeiro disponível
+      if (!graficoEncontrado) {
+         graficoEncontrado = graficos[0];
+         sendMessage(id, "Gráfico 'Receitas - Categorias' não encontrado, usando primeiro gráfico disponível");
+      }
+
+      var grafico = graficoEncontrado;
+
+      // Capturar o gráfico como imagem
+      var imagem = grafico.getBlob();
+
+      if (!imagem) {
+         sendMessage(id, "Não foi possível capturar a imagem do gráfico de receitas");
+         return null;
+      }
+
+      // Salvar no Drive e criar link público
+      try {
+         var nomeArquivo = `grafico_receitas_categorias_${year}_${Date.now()}.png`;
+         var arquivo = DriveApp.createFile(imagem);
+         arquivo.setName(nomeArquivo);
+
+         // Tornar público
+         arquivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+         var url = arquivo.getDownloadUrl();
+
+         return url;
+
+      } catch (e) {
+         sendMessage(id, "❌ *Erro ao salvar gráfico de receitas no Drive:* " + e.message);
+         return null;
+      }
 
    } catch (error) {
-      console.error("Erro ao criar gráfico semanal:", error.message);
+      sendMessage(id, "❌ *Erro ao capturar gráfico de receitas:* " + error.message);
       return null;
    }
 }
+
+function capturarGraficoReceitasMensal(idPlanilha, month, year, id) {
+   try {
+      var planilha = SpreadsheetApp.openById(idPlanilha);
+
+      // Procurar especificamente na aba "Painel de receitas"
+      var abaPainelReceitas = planilha.getSheetByName("Painel de receitas");
+
+      if (!abaPainelReceitas) {
+         sendMessage(id, "Aba 'Painel de receitas' não encontrada");
+         return null;
+      }
+
+      // Procurar por gráficos na aba
+      var graficos = abaPainelReceitas.getCharts();
+
+      if (graficos.length === 0) {
+         sendMessage(id, "Nenhum gráfico encontrado na aba 'Painel de receitas'");
+         return null;
+      }
+
+      // Procurar pelo gráfico específico "Receita - Apunhado anual"
+      var graficoEncontrado = null;
+      for (var i = 0; i < graficos.length; i++) {
+         try {
+            var nomeGrafico = graficos[i].getOptions().get('title');
+            if (nomeGrafico && nomeGrafico.includes("Receita - Apunhado anual")) {
+               graficoEncontrado = graficos[i];
+               break;
+            }
+         } catch (e) {
+            // Se não conseguir pegar o nome, usar o primeiro gráfico
+            if (i === 0) {
+               graficoEncontrado = graficos[i];
+            }
+         }
+      }
+
+      // Se não encontrou o gráfico específico, usar o primeiro disponível
+      if (!graficoEncontrado) {
+         graficoEncontrado = graficos[0];
+         sendMessage(id, "Gráfico 'Receita - Apunhado anual' não encontrado, usando primeiro gráfico disponível");
+      }
+
+      var grafico = graficoEncontrado;
+
+      // Capturar o gráfico como imagem
+      var imagem = grafico.getBlob();
+
+      if (!imagem) {
+         sendMessage(id, "Não foi possível capturar a imagem do gráfico de receitas");
+         return null;
+      }
+
+      // Salvar no Drive e criar link público
+      try {
+         var nomeArquivo = `grafico_receitas_mensal_${month}_${year}_${Date.now()}.png`;
+         var arquivo = DriveApp.createFile(imagem);
+         arquivo.setName(nomeArquivo);
+
+         // Tornar público
+         arquivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+         var url = arquivo.getDownloadUrl();
+
+         return url;
+
+      } catch (e) {
+         sendMessage(id, "❌ *Erro ao salvar gráfico de receitas no Drive:* " + e.message);
+         return null;
+      }
+
+   } catch (error) {
+      sendMessage(id, "❌ *Erro ao capturar gráfico de receitas:* " + error.message);
+      return null;
+   }
+}
+
 
 function getWeekNumber(date) {
    // Função para calcular o número da semana do ano
@@ -2786,7 +2819,7 @@ function verificarECriarColunaCategoria(idPlanilha, categoria, id) {
       var planilhaResumo = SpreadsheetApp.openById(idPlanilha).getSheetByName("Resumo mensal");
 
       if (!planilhaResumo) {
-         sendMessage(id, "❌ *Debug:* Aba 'Resumo mensal' não encontrada na planilha");
+         // sendMessage(id, "❌ *Debug:* Aba 'Resumo mensal' não encontrada na planilha");
          return;
       }
 
@@ -2794,7 +2827,7 @@ function verificarECriarColunaCategoria(idPlanilha, categoria, id) {
       var dados = planilhaResumo.getDataRange().getValues();
 
       if (dados.length === 0) {
-         sendMessage(id, "❌ *Debug:* Planilha 'Resumo mensal' está vazia");
+         // sendMessage(id, "❌ *Debug:* Planilha 'Resumo mensal' está vazia");
          return;
       }
 
@@ -2813,7 +2846,7 @@ function verificarECriarColunaCategoria(idPlanilha, categoria, id) {
 
       // Se a categoria não existe, criar nova coluna
       if (!categoriaExiste) {
-         sendMessage(id, `🔧 *Debug:* Criando nova coluna para categoria: ${categoria}`);
+         // sendMessage(id, `🔧 *Debug:* Criando nova coluna para categoria: ${categoria}`);
 
          // Encontrar a coluna "Total Gasto" para inserir antes dela
          var colunaTotalGasto = -1;
@@ -2828,13 +2861,13 @@ function verificarECriarColunaCategoria(idPlanilha, categoria, id) {
          // Se não encontrar "Total Gasto", usar a última coluna
          if (colunaTotalGasto === -1) {
             colunaTotalGasto = cabecalho.length;
-            sendMessage(id, `⚠️ *Debug:* Coluna "Total Gasto" não encontrada, inserindo na última posição`);
+            // sendMessage(id, `⚠️ *Debug:* Coluna "Total Gasto" não encontrada, inserindo na última posição`);
          }
 
          // Posição onde inserir a nova categoria (antes do Total Gasto)
          var posicaoInsercao = colunaTotalGasto + 1; // +1 porque as colunas começam em 1 no Google Sheets
 
-         sendMessage(id, `🔧 *Debug:* Inserindo categoria "${categoria}" na coluna ${posicaoInsercao} (antes do Total Gasto)`);
+         // sendMessage(id, `🔧 *Debug:* Inserindo categoria "${categoria}" na coluna ${posicaoInsercao} (antes do Total Gasto)`);
 
          // Inserir nova coluna na posição correta
          planilhaResumo.insertColumnBefore(posicaoInsercao);
@@ -2876,9 +2909,9 @@ function verificarECriarColunaCategoria(idPlanilha, categoria, id) {
          var formulaTotal = `=SUM($${colunaCategoria}$2:$${colunaCategoria}$13)`;
          planilhaResumo.getRange(15, posicaoInsercao).setFormula(formulaTotal);
 
-         sendMessage(id, `🔧 *Debug:* Fórmula de total anual adicionada na linha 15: ${formulaTotal}`);
+         // sendMessage(id, `🔧 *Debug:* Fórmula de total anual adicionada na linha 15: ${formulaTotal}`);
 
-         sendMessage(id, `✅ *Debug:* Coluna criada com sucesso para categoria: ${categoria} na coluna ${colunaCategoria} com cor ${corCategoria}`);
+         // sendMessage(id, `✅ *Debug:* Coluna criada com sucesso para categoria: ${categoria} na coluna ${colunaCategoria} com cor ${corCategoria}`);
 
          // Verificar se a cor foi realmente aplicada
          Utilities.sleep(1000); // Aguardar 1 segundo para a cor ser aplicada
@@ -2891,12 +2924,15 @@ function verificarECriarColunaCategoria(idPlanilha, categoria, id) {
 
          // Recriar o gráfico "Gastos - Categorias" (gráfico de pizza) com os totais
          recriarGraficoGastosCategorias(idPlanilha, id);
+
+         // Recriar o gráfico "Gastos - Apunhado Mensal" após criar nova coluna
+         recriarGraficoGastosApunhadoMensal(idPlanilha, id);
       } else {
-         sendMessage(id, `ℹ️ *Debug:* Categoria ${categoria} já existe no Resumo mensal na coluna ${colunaExistente + 1}`);
+         // sendMessage(id, `ℹ️ *Debug:* Categoria ${categoria} já existe no Resumo mensal na coluna ${colunaExistente + 1}`);
       }
 
    } catch (error) {
-      sendMessage(id, `❌ *Debug - Erro ao verificar/criar coluna de categoria:* ${error.message}`);
+      // sendMessage(id, `❌ *Debug - Erro ao verificar/criar coluna de categoria:* ${error.message}`);
    }
 }
 
@@ -2944,7 +2980,11 @@ function processarReceita(id, dadosReceita) {
          return;
       }
 
-      planilha.appendRow([data_hora, data, categoria, descricao, valor]);
+      planilha.appendRow([data_hora, data, descricao, valor, categoria]);
+
+      // Verificar e criar coluna automaticamente no "Painel de receitas" se a categoria não existir
+      // sendMessage(id, `🔧 *Debug:* Chamando verificarECriarColunaReceita para categoria: ${categoria}`);
+      verificarECriarColunaReceita(id_planilha, categoria, id);
 
       var opcoes = {
          "inline_keyboard": [
@@ -2957,7 +2997,7 @@ function processarReceita(id, dadosReceita) {
                "callback_data": "despesas"
             }],
             [{
-               "text": "Adicionar Receita",
+               "text": "💲 Adicionar Receita",
                "callback_data": "receita"
             }],
             [{
@@ -3100,21 +3140,1076 @@ function obterCorParaCategoria(planilha, categoria, id) {
    }
 }
 
-function recriarGraficoGastosCategorias(idPlanilha, id) {
+function buscarReceitasDoMes(idPlanilha, mes) {
    try {
-      sendMessage(id, `🔄 *Debug:* Recriando gráfico "Gastos - Categorias"...`);
+      // Abrir a planilha de receitas
+      var planilha = SpreadsheetApp.openById(idPlanilha).getSheetByName("Receitas");
+
+      if (!planilha) {
+         console.error("Aba 'Receitas' não encontrada na planilha");
+         return null;
+      }
+
+      // Buscar dados da planilha
+      var dados = planilha.getDataRange().getValues();
+
+      if (dados.length <= 1) {
+         // Apenas cabeçalho ou planilha vazia
+         return [];
+      }
+
+      var receitas = [];
+      var anoAtual = new Date().getFullYear();
+
+      // Identificar as colunas corretas baseado no cabeçalho
+      var colunaData = -1;
+      var colunaDescricao = -1;
+      var colunaValor = -1;
+      var colunaCategoria = -1;
+
+      if (dados.length > 0) {
+         var cabecalho = dados[0];
+         for (var j = 0; j < cabecalho.length; j++) {
+            var nomeColunaLower = cabecalho[j].toString().toLowerCase();
+            if (nomeColunaLower.includes('data') && !nomeColunaLower.includes('hora')) {
+               colunaData = j;
+            } else if (nomeColunaLower.includes('descrição') || nomeColunaLower.includes('descricao')) {
+               colunaDescricao = j;
+            } else if (nomeColunaLower.includes('valor')) {
+               colunaValor = j;
+            } else if (nomeColunaLower.includes('categoria')) {
+               colunaCategoria = j;
+            }
+         }
+
+         // Fallback para as posições padrão se não conseguir identificar
+         // Nova ordem: Data e hora da inserção, Data, Descrição, Valor da Receita, Categoria da Receita
+         if (colunaData === -1) colunaData = 1;        // Coluna B - Data
+         if (colunaDescricao === -1) colunaDescricao = 2; // Coluna C - Descrição  
+         if (colunaValor === -1) colunaValor = 3;      // Coluna D - Valor da Receita
+         if (colunaCategoria === -1) colunaCategoria = 4; // Coluna E - Categoria da Receita
+      }
+
+      // Pular o cabeçalho (linha 0) e processar todas as linhas de dados
+      for (var i = 1; i < dados.length; i++) {
+         var dataReceita = dados[i][colunaData]; // Coluna da data
+         var descricao = dados[i][colunaDescricao]; // Coluna da descrição
+         var valor = parseFloat(dados[i][colunaValor]); // Coluna do valor
+         var categoria = dados[i][colunaCategoria]; // Coluna da categoria
+
+         if (dataReceita && !isNaN(valor) && categoria) {
+            // Verificar se é do mês especificado
+            if (typeof dataReceita === 'string' && dataReceita.includes('/')) {
+               var partesData = dataReceita.split('/');
+               if (partesData.length === 3) {
+                  var diaReceita = parseInt(partesData[0]);
+                  var mesReceita = parseInt(partesData[1]);
+                  var anoReceita = parseInt(partesData[2]);
+
+                  if (mesReceita === mes && anoReceita === anoAtual && !isNaN(diaReceita)) {
+                     receitas.push({
+                        data: dataReceita,
+                        descricao: descricao.toString().trim(),
+                        valor: valor,
+                        categoria: categoria.toString().trim()
+                     });
+                  }
+               }
+            } else if (dataReceita instanceof Date) {
+               // Se a data for um objeto Date
+               var mesReceita = dataReceita.getMonth() + 1;
+               var anoReceita = dataReceita.getFullYear();
+
+               if (mesReceita === mes && anoReceita === anoAtual) {
+                  var dataFormatada = dataReceita.getDate().toString().padStart(2, '0') + '/' +
+                     (dataReceita.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                     dataReceita.getFullYear();
+
+                  receitas.push({
+                     data: dataFormatada,
+                     descricao: descricao.toString().trim(),
+                     valor: valor,
+                     categoria: categoria.toString().trim()
+                  });
+               }
+            }
+         }
+      }
+
+      // Ordenar por data (mais recente primeiro)
+      receitas.sort(function (a, b) {
+         try {
+            var partesA = a.data.split('/');
+            var partesB = b.data.split('/');
+
+            if (partesA.length !== 3 || partesB.length !== 3) {
+               return 0;
+            }
+
+            var dataA = new Date(parseInt(partesA[2]), parseInt(partesA[1]) - 1, parseInt(partesA[0]));
+            var dataB = new Date(parseInt(partesB[2]), parseInt(partesB[1]) - 1, parseInt(partesB[0]));
+
+            return dataB - dataA;
+         } catch (error) {
+            return 0;
+         }
+      });
+
+      return receitas;
+
+   } catch (error) {
+      console.error("Erro ao buscar receitas do mês:", error.message);
+      return null;
+   }
+}
+
+function processarReceitasDoMes(id, textoMensagem) {
+   try {
+      // Formato esperado: "receitas mês MÊS" ou "receita mês MÊS"
+      var partes = textoMensagem.split(' ');
+
+      if (partes.length < 3) {
+         sendMessage(id, "❌ *Erro:* Formato inválido. Use: `receitas mês MÊS`\n\n*Exemplo:* `receitas mês 12`");
+         return;
+      }
+
+      var mes = parseInt(partes[2]);
+
+      // Validar mês
+      if (isNaN(mes) || mes < 1 || mes > 12) {
+         sendMessage(id, "❌ *Erro:* Mês inválido. Use um número de 1 a 12.\n\n*Exemplo:* Janeiro = 1, Dezembro = 12");
+         return;
+      }
+
+      // Buscar receitas do mês
+      var receitas = buscarReceitasDoMes(id_planilha, mes);
+
+      if (receitas && receitas.length > 0) {
+         var nomesMeses = ["", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+         var anoAtual = new Date().getFullYear();
+         var totalMes = receitas.reduce(function (total, receita) { return total + receita.valor; }, 0);
+
+         var mensagem = `💰 *Receitas de ${nomesMeses[mes]} ${anoAtual}*\n\n`;
+         mensagem += `*Total do mês:* R$ ${totalMes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n\n`;
+
+         for (var i = 0; i < receitas.length; i++) {
+            var receita = receitas[i];
+            mensagem += `📅 *${receita.data}*\n`;
+            mensagem += `💬 ${receita.descricao}\n`;
+            mensagem += `💰 R$ ${receita.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n`;
+            mensagem += `🏷️ ${receita.categoria}\n\n`;
+         }
+
+         var opcoes = {
+            "inline_keyboard": [
+               [{
+                  "text": "➕ Adicionar Receita",
+                  "callback_data": "adicionar_receita"
+               }],
+               [{
+                  "text": "📊 Listar Receitas do Mês",
+                  "callback_data": "listar_receitas_mes"
+               }],
+               [{
+                  "text": "🏷️ Listar Receitas por Categoria",
+                  "callback_data": "listar_receitas_categoria"
+               }],
+               [{
+                  "text": "📈 Receitas por Categoria no Mês",
+                  "callback_data": "listar_receitas_categoria_mes"
+               }],
+               [{
+                  "text": "🔙 Voltar ao Menu",
+                  "callback_data": "ajuda"
+               }]
+            ]
+         }
+
+         sendMessage(id, mensagem, opcoes);
+      } else {
+         var nomesMeses = ["", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+         var anoAtual = new Date().getFullYear();
+
+         var opcoes = {
+            "inline_keyboard": [
+               [{
+                  "text": "➕ Adicionar Receita",
+                  "callback_data": "adicionar_receita"
+               }],
+               [{
+                  "text": "📊 Listar Receitas do Mês",
+                  "callback_data": "listar_receitas_mes"
+               }],
+               [{
+                  "text": "🏷️ Listar Receitas por Categoria",
+                  "callback_data": "listar_receitas_categoria"
+               }],
+               [{
+                  "text": "📈 Receitas por Categoria no Mês",
+                  "callback_data": "listar_receitas_categoria_mes"
+               }],
+               [{
+                  "text": "🔙 Voltar ao Menu",
+                  "callback_data": "ajuda"
+               }]
+            ]
+         }
+
+         sendMessage(id, `💰 *Receitas de ${nomesMeses[mes]} ${anoAtual}*\n\nNenhuma receita encontrada para este mês.`, opcoes);
+      }
+
+   } catch (error) {
+      sendMessage(id, `❌ *Erro ao buscar receitas:* ${error.message}\n\nVerifique se a planilha está acessível e tente novamente.`);
+   }
+}
+
+function buscarReceitasPorCategoria(idPlanilha, categoria) {
+   try {
+      // Abrir a planilha de receitas
+      var planilha = SpreadsheetApp.openById(idPlanilha).getSheetByName("Receitas");
+
+      if (!planilha) {
+         console.error("Aba 'Receitas' não encontrada na planilha");
+         return null;
+      }
+
+      // Buscar dados da planilha
+      var dados = planilha.getDataRange().getValues();
+
+      if (dados.length <= 1) {
+         return [];
+      }
+
+      var receitas = [];
+
+      // Identificar as colunas corretas baseado no cabeçalho
+      var colunaData = -1;
+      var colunaDescricao = -1;
+      var colunaValor = -1;
+      var colunaCategoria = -1;
+
+      if (dados.length > 0) {
+         var cabecalho = dados[0];
+         for (var j = 0; j < cabecalho.length; j++) {
+            var nomeColunaLower = cabecalho[j].toString().toLowerCase();
+            if (nomeColunaLower.includes('data') && !nomeColunaLower.includes('hora')) {
+               colunaData = j;
+            } else if (nomeColunaLower.includes('descrição') || nomeColunaLower.includes('descricao')) {
+               colunaDescricao = j;
+            } else if (nomeColunaLower.includes('valor')) {
+               colunaValor = j;
+            } else if (nomeColunaLower.includes('categoria')) {
+               colunaCategoria = j;
+            }
+         }
+
+         // Fallback para as posições padrão se não conseguir identificar
+         // Nova ordem: Data e hora da inserção, Data, Descrição, Valor da Receita, Categoria da Receita
+         if (colunaData === -1) colunaData = 1;        // Coluna B - Data
+         if (colunaDescricao === -1) colunaDescricao = 2; // Coluna C - Descrição  
+         if (colunaValor === -1) colunaValor = 3;      // Coluna D - Valor da Receita
+         if (colunaCategoria === -1) colunaCategoria = 4; // Coluna E - Categoria da Receita
+      }
+
+      // Pular o cabeçalho (linha 0) e processar todas as linhas de dados
+      for (var i = 1; i < dados.length; i++) {
+         var dataReceita = dados[i][colunaData];
+         var descricao = dados[i][colunaDescricao];
+         var valor = parseFloat(dados[i][colunaValor]);
+         var categoriaReceita = dados[i][colunaCategoria];
+
+         if (dataReceita && !isNaN(valor) && categoriaReceita) {
+            // Verificar se a categoria corresponde (case-insensitive)
+            if (categoriaReceita.toString().toLowerCase().trim() === categoria.toLowerCase().trim()) {
+               var dataFormatada = dataReceita;
+
+               // Se a data for um objeto Date, converter para string
+               if (dataReceita instanceof Date) {
+                  dataFormatada = dataReceita.getDate().toString().padStart(2, '0') + '/' +
+                     (dataReceita.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                     dataReceita.getFullYear();
+               }
+
+               receitas.push({
+                  data: dataFormatada,
+                  descricao: descricao.toString().trim(),
+                  valor: valor,
+                  categoria: categoriaReceita.toString().trim()
+               });
+            }
+         }
+      }
+
+      // Ordenar por data (mais recente primeiro)
+      receitas.sort(function (a, b) {
+         try {
+            var partesA = a.data.split('/');
+            var partesB = b.data.split('/');
+
+            if (partesA.length !== 3 || partesB.length !== 3) {
+               return 0;
+            }
+
+            var dataA = new Date(parseInt(partesA[2]), parseInt(partesA[1]) - 1, parseInt(partesA[0]));
+            var dataB = new Date(parseInt(partesB[2]), parseInt(partesB[1]) - 1, parseInt(partesB[0]));
+
+            return dataB - dataA;
+         } catch (error) {
+            return 0;
+         }
+      });
+
+      return receitas;
+
+   } catch (error) {
+      console.error("Erro ao buscar receitas por categoria:", error.message);
+      return null;
+   }
+}
+
+function processarReceitasPorCategoria(id, textoMensagem) {
+   try {
+      // Formato esperado: "receitas categoria NOME_CATEGORIA" ou "receita categoria NOME_CATEGORIA"
+      var partes = textoMensagem.split(' ');
+      var categoria = partes.slice(2).join(' ').trim();
+
+      if (!categoria) {
+         sendMessage(id, "❌ *Erro:* Formato inválido. Use: `receitas categoria NOME_CATEGORIA`\n\n*Exemplo:* `receitas categoria Trabalho`");
+         return;
+      }
+
+      // Buscar receitas da categoria
+      var receitas = buscarReceitasPorCategoria(id_planilha, categoria);
+
+      if (receitas && receitas.length > 0) {
+         var totalCategoria = receitas.reduce(function (total, receita) { return total + receita.valor; }, 0);
+
+         var mensagem = `🏷️ *Receitas da Categoria: ${categoria}*\n\n`;
+         mensagem += `*Total da categoria:* R$ ${totalCategoria.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n\n`;
+
+         for (var i = 0; i < receitas.length; i++) {
+            var receita = receitas[i];
+            mensagem += `📅 *${receita.data}*\n`;
+            mensagem += `💬 ${receita.descricao}\n`;
+            mensagem += `💰 R$ ${receita.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n\n`;
+         }
+
+         var opcoes = {
+            "inline_keyboard": [
+               [{
+                  "text": "➕ Adicionar Receita",
+                  "callback_data": "adicionar_receita"
+               }],
+               [{
+                  "text": "📊 Listar Receitas do Mês",
+                  "callback_data": "listar_receitas_mes"
+               }],
+               [{
+                  "text": "🏷️ Listar Receitas por Categoria",
+                  "callback_data": "listar_receitas_categoria"
+               }],
+               [{
+                  "text": "📈 Receitas por Categoria no Mês",
+                  "callback_data": "listar_receitas_categoria_mes"
+               }],
+               [{
+                  "text": "🔙 Voltar ao Menu",
+                  "callback_data": "ajuda"
+               }]
+            ]
+         }
+
+         sendMessage(id, mensagem, opcoes);
+      } else {
+         var opcoes = {
+            "inline_keyboard": [
+               [{
+                  "text": "➕ Adicionar Receita",
+                  "callback_data": "adicionar_receita"
+               }],
+               [{
+                  "text": "📊 Listar Receitas do Mês",
+                  "callback_data": "listar_receitas_mes"
+               }],
+               [{
+                  "text": "🏷️ Listar Receitas por Categoria",
+                  "callback_data": "listar_receitas_categoria"
+               }],
+               [{
+                  "text": "📈 Receitas por Categoria no Mês",
+                  "callback_data": "listar_receitas_categoria_mes"
+               }],
+               [{
+                  "text": "🔙 Voltar ao Menu",
+                  "callback_data": "ajuda"
+               }]
+            ]
+         }
+
+         sendMessage(id, `🏷️ *Receitas da Categoria: ${categoria}*\n\nNenhuma receita encontrada para esta categoria.`, opcoes);
+      }
+
+   } catch (error) {
+      sendMessage(id, `❌ *Erro ao buscar receitas por categoria:* ${error.message}\n\nVerifique se a planilha está acessível e tente novamente.`);
+   }
+}
+
+function buscarReceitasPorCategoriaNoMes(idPlanilha, mes, categoria) {
+   try {
+      // Abrir a planilha de receitas
+      var planilha = SpreadsheetApp.openById(idPlanilha).getSheetByName("Receitas");
+
+      if (!planilha) {
+         console.error("Aba 'Receitas' não encontrada na planilha");
+         return null;
+      }
+
+      // Buscar dados da planilha
+      var dados = planilha.getDataRange().getValues();
+
+      if (dados.length <= 1) {
+         return [];
+      }
+
+      var receitas = [];
+      var anoAtual = new Date().getFullYear();
+
+      // Identificar as colunas corretas baseado no cabeçalho
+      var colunaData = -1;
+      var colunaDescricao = -1;
+      var colunaValor = -1;
+      var colunaCategoria = -1;
+
+      if (dados.length > 0) {
+         var cabecalho = dados[0];
+         for (var j = 0; j < cabecalho.length; j++) {
+            var nomeColunaLower = cabecalho[j].toString().toLowerCase();
+            if (nomeColunaLower.includes('data') && !nomeColunaLower.includes('hora')) {
+               colunaData = j;
+            } else if (nomeColunaLower.includes('descrição') || nomeColunaLower.includes('descricao')) {
+               colunaDescricao = j;
+            } else if (nomeColunaLower.includes('valor')) {
+               colunaValor = j;
+            } else if (nomeColunaLower.includes('categoria')) {
+               colunaCategoria = j;
+            }
+         }
+
+         // Fallback para as posições padrão se não conseguir identificar
+         // Nova ordem: Data e hora da inserção, Data, Descrição, Valor da Receita, Categoria da Receita
+         if (colunaData === -1) colunaData = 1;        // Coluna B - Data
+         if (colunaDescricao === -1) colunaDescricao = 2; // Coluna C - Descrição  
+         if (colunaValor === -1) colunaValor = 3;      // Coluna D - Valor da Receita
+         if (colunaCategoria === -1) colunaCategoria = 4; // Coluna E - Categoria da Receita
+      }
+
+      // Pular o cabeçalho (linha 0) e processar todas as linhas de dados
+      for (var i = 1; i < dados.length; i++) {
+         var dataReceita = dados[i][colunaData];
+         var descricao = dados[i][colunaDescricao];
+         var valor = parseFloat(dados[i][colunaValor]);
+         var categoriaReceita = dados[i][colunaCategoria];
+
+         if (dataReceita && !isNaN(valor) && categoriaReceita) {
+            var mesReceita = null;
+            var anoReceita = null;
+            var dataFormatada = dataReceita;
+
+            // Verificar se é do mês especificado e da categoria especificada
+            if (typeof dataReceita === 'string' && dataReceita.includes('/')) {
+               var partesData = dataReceita.split('/');
+               if (partesData.length === 3) {
+                  var diaReceita = parseInt(partesData[0]);
+                  mesReceita = parseInt(partesData[1]);
+                  anoReceita = parseInt(partesData[2]);
+
+                  if (isNaN(diaReceita) || isNaN(mesReceita) || isNaN(anoReceita)) {
+                     continue;
+                  }
+               } else {
+                  continue;
+               }
+            } else if (dataReceita instanceof Date) {
+               mesReceita = dataReceita.getMonth() + 1;
+               anoReceita = dataReceita.getFullYear();
+
+               dataFormatada = dataReceita.getDate().toString().padStart(2, '0') + '/' +
+                  (dataReceita.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                  dataReceita.getFullYear();
+            } else {
+               continue;
+            }
+
+            if (mesReceita === mes && anoReceita === anoAtual &&
+               categoriaReceita.toString().toLowerCase().trim() === categoria.toLowerCase().trim()) {
+               receitas.push({
+                  data: dataFormatada,
+                  descricao: descricao.toString().trim(),
+                  valor: valor,
+                  categoria: categoriaReceita.toString().trim()
+               });
+            }
+         }
+      }
+
+      // Ordenar por data (mais recente primeiro)
+      receitas.sort(function (a, b) {
+         try {
+            var partesA = a.data.split('/');
+            var partesB = b.data.split('/');
+
+            if (partesA.length !== 3 || partesB.length !== 3) {
+               return 0;
+            }
+
+            var dataA = new Date(parseInt(partesA[2]), parseInt(partesA[1]) - 1, parseInt(partesA[0]));
+            var dataB = new Date(parseInt(partesB[2]), parseInt(partesB[1]) - 1, parseInt(partesB[0]));
+
+            return dataB - dataA;
+         } catch (error) {
+            return 0;
+         }
+      });
+
+      return receitas;
+
+   } catch (error) {
+      console.error("Erro ao buscar receitas por categoria no mês:", error.message);
+      return null;
+   }
+}
+
+function processarReceitasPorCategoriaNoMes(id, textoMensagem) {
+   try {
+      // Formato esperado: "receitas categoria MÊS NOME_CATEGORIA" ou "receita categoria MÊS NOME_CATEGORIA"
+      var partes = textoMensagem.split(' ');
+
+      if (partes.length < 4) {
+         sendMessage(id, "❌ *Erro:* Formato inválido. Use: `receitas categoria MÊS NOME_CATEGORIA`\n\n*Exemplo:* `receitas categoria 12 Trabalho`");
+         return;
+      }
+
+      var mes = parseInt(partes[2]);
+      var categoria = partes.slice(3).join(' ').trim();
+
+      // Validar mês
+      if (isNaN(mes) || mes < 1 || mes > 12) {
+         sendMessage(id, "❌ *Erro:* Mês inválido. Use um número de 1 a 12.\n\n*Exemplo:* Janeiro = 1, Dezembro = 12");
+         return;
+      }
+
+      if (!categoria) {
+         sendMessage(id, "❌ *Erro:* Categoria não informada. Use: `receitas categoria MÊS NOME_CATEGORIA`\n\n*Exemplo:* `receitas categoria 12 Trabalho`");
+         return;
+      }
+
+      // Buscar receitas da categoria no mês
+      var receitas = buscarReceitasPorCategoriaNoMes(id_planilha, mes, categoria);
+
+      if (receitas && receitas.length > 0) {
+         var nomesMeses = ["", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+         var anoAtual = new Date().getFullYear();
+         var totalCategoriaMes = receitas.reduce(function (total, receita) { return total + receita.valor; }, 0);
+
+         var mensagem = `📈 *Receitas da Categoria: ${categoria} - ${nomesMeses[mes]} ${anoAtual}*\n\n`;
+         mensagem += `*Total da categoria no mês:* R$ ${totalCategoriaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n\n`;
+
+         for (var i = 0; i < receitas.length; i++) {
+            var receita = receitas[i];
+            mensagem += `📅 *${receita.data}*\n`;
+            mensagem += `💬 ${receita.descricao}\n`;
+            mensagem += `💰 R$ ${receita.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n\n`;
+         }
+
+         var opcoes = {
+            "inline_keyboard": [
+               [{
+                  "text": "➕ Adicionar Receita",
+                  "callback_data": "adicionar_receita"
+               }],
+               [{
+                  "text": "📊 Listar Receitas do Mês",
+                  "callback_data": "listar_receitas_mes"
+               }],
+               [{
+                  "text": "🏷️ Listar Receitas por Categoria",
+                  "callback_data": "listar_receitas_categoria"
+               }],
+               [{
+                  "text": "📈 Receitas por Categoria no Mês",
+                  "callback_data": "listar_receitas_categoria_mes"
+               }],
+               [{
+                  "text": "🔙 Voltar ao Menu",
+                  "callback_data": "ajuda"
+               }]
+            ]
+         }
+
+         sendMessage(id, mensagem, opcoes);
+      } else {
+         var nomesMeses = ["", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+         var anoAtual = new Date().getFullYear();
+
+         var opcoes = {
+            "inline_keyboard": [
+               [{
+                  "text": "➕ Adicionar Receita",
+                  "callback_data": "adicionar_receita"
+               }],
+               [{
+                  "text": "📊 Listar Receitas do Mês",
+                  "callback_data": "listar_receitas_mes"
+               }],
+               [{
+                  "text": "🏷️ Listar Receitas por Categoria",
+                  "callback_data": "listar_receitas_categoria"
+               }],
+               [{
+                  "text": "📈 Receitas por Categoria no Mês",
+                  "callback_data": "listar_receitas_categoria_mes"
+               }],
+               [{
+                  "text": "🔙 Voltar ao Menu",
+                  "callback_data": "ajuda"
+               }]
+            ]
+         }
+
+         sendMessage(id, `📈 *Receitas da Categoria: ${categoria} - ${nomesMeses[mes]} ${anoAtual}*\n\nNenhuma receita encontrada para esta categoria no mês especificado.`, opcoes);
+      }
+
+   } catch (error) {
+      sendMessage(id, `❌ *Erro ao buscar receitas por categoria no mês:* ${error.message}\n\nVerifique se a planilha está acessível e tente novamente.`);
+   }
+}
+
+function verificarECriarColunaReceita(idPlanilha, categoria, id) {
+   try {
+      // sendMessage(id, `🔍 *Debug:* Iniciando verificação de categoria de receita: ${categoria}`);
+
+      // Abrir a planilha "Painel de receitas"
+      var planilhaReceitas = SpreadsheetApp.openById(idPlanilha).getSheetByName("Painel de receitas");
+
+      if (!planilhaReceitas) {
+         // sendMessage(id, "❌ *Debug:* Aba 'Painel de receitas' não encontrada na planilha");
+         return;
+      }
+
+      // sendMessage(id, `✅ *Debug:* Aba 'Painel de receitas' encontrada com sucesso`);
+
+      // Buscar dados da planilha
+      var dados = planilhaReceitas.getDataRange().getValues();
+
+      if (dados.length === 0) {
+         // sendMessage(id, "❌ *Debug:* Planilha 'Painel de receitas' está vazia");
+         return;
+      }
+
+      var cabecalho = dados[0];
+      var categoriaExiste = false;
+      var colunaExistente = -1;
+
+      // Verificar se a categoria já existe no cabeçalho
+      // sendMessage(id, `🔍 *Debug:* Verificando se categoria '${categoria}' já existe no cabeçalho...`);
+      // sendMessage(id, `🔍 *Debug:* Cabeçalho atual: ${JSON.stringify(cabecalho)}`);
+
+      for (var i = 0; i < cabecalho.length; i++) {
+         if (cabecalho[i] && cabecalho[i].toString().trim() === categoria.trim()) {
+            categoriaExiste = true;
+            colunaExistente = i;
+            // sendMessage(id, `✅ *Debug:* Categoria '${categoria}' já existe na coluna ${i + 1}`);
+            break;
+         }
+      }
+
+      if (!categoriaExiste) {
+         // sendMessage(id, `ℹ️ *Debug:* Categoria '${categoria}' não encontrada, será criada nova coluna`);
+      }
+
+      // Se a categoria não existe, criar nova coluna
+      if (!categoriaExiste) {
+         // sendMessage(id, `🔧 *Debug:* Criando nova coluna para categoria de receita: ${categoria}`);
+
+         // Encontrar a coluna "Receita Total" para inserir antes dela
+         var colunaReceitaTotal = -1;
+         for (var j = 0; j < cabecalho.length; j++) {
+            var nomeColunaLower = cabecalho[j].toString().toLowerCase();
+            if (nomeColunaLower.includes('receita') && nomeColunaLower.includes('total')) {
+               colunaReceitaTotal = j;
+               break;
+            }
+         }
+
+         // Se não encontrar "Receita Total", usar a última coluna
+         if (colunaReceitaTotal === -1) {
+            colunaReceitaTotal = cabecalho.length;
+            // sendMessage(id, `⚠️ *Debug:* Coluna "Receita Total" não encontrada, inserindo na última posição`);
+         }
+
+         // Posição onde inserir a nova categoria (antes do Receita Total)
+         var posicaoInsercao = colunaReceitaTotal + 1; // +1 porque as colunas começam em 1 no Google Sheets
+
+         // sendMessage(id, `🔧 *Debug:* Inserindo categoria de receita "${categoria}" na coluna ${posicaoInsercao} (antes do Receita Total)`);
+
+         // Inserir nova coluna na posição correta
+         planilhaReceitas.insertColumnBefore(posicaoInsercao);
+
+         // Adicionar o cabeçalho da categoria na primeira linha
+         planilhaReceitas.getRange(1, posicaoInsercao).setValue(categoria);
+
+         // Aplicar cor ao cabeçalho da nova categoria
+         var corCategoria = obterCorParaCategoria(planilhaReceitas, categoria, id);
+         planilhaReceitas.getRange(1, posicaoInsercao).setBackground(corCategoria);
+         planilhaReceitas.getRange(1, posicaoInsercao).setFontWeight("bold");
+
+         // Verificar se a cor foi aplicada corretamente
+         var corAplicada = planilhaReceitas.getRange(1, posicaoInsercao).getBackground();
+         console.log(`Cor aplicada na coluna ${posicaoInsercao}: ${corAplicada} (esperada: ${corCategoria})`);
+
+         // Aplicar a fórmula para cada mês (linhas 2 a 13 - Janeiro a Dezembro)
+         for (var mes = 2; mes <= 13; mes++) {
+            // Identificar a coluna com as datas dos meses (geralmente coluna B)
+            var colunaMes = "B"; // Assumindo que as datas dos meses estão na coluna B
+
+            // Identificar as colunas da aba Receitas
+            var colunaValores = "D"; // Coluna de valores na aba Receitas
+            var colunaDatas = "B";   // Coluna de datas na aba Receitas  
+            var colunaCategorias = "E"; // Coluna de categorias na aba Receitas
+
+            // Converter número da coluna para letra (A=1, B=2, etc.)
+            var colunaCategoria = String.fromCharCode(65 + posicaoInsercao - 1);
+
+            // Fórmula baseada no exemplo fornecido: =SUMIFS(Receitas!$D$1:$D; Receitas!$B$1:$B; ">="&$B13; Receitas!$B$1:$B; "<"&(EOMONTH($B13; 0)+1); Receitas!$E$1:$E; "="&C$1)
+            // Adaptando para nossa estrutura:
+            var formula = `=SUMIFS(Receitas!$${colunaValores}$1:$${colunaValores}; Receitas!$${colunaDatas}$1:$${colunaDatas}; ">="&$${colunaMes}$${mes}; Receitas!$${colunaDatas}$1:$${colunaDatas}; "<"&(EOMONTH($${colunaMes}$${mes}; 0)+1); Receitas!$${colunaCategorias}$1:$${colunaCategorias}; "="&$${colunaCategoria}$1)`;
+
+            sendMessage(id, `🔧 *Debug:* Fórmula para mês ${mes}: ${formula}`);
+            planilhaReceitas.getRange(mes, posicaoInsercao).setFormula(formula);
+         }
+
+         // Adicionar fórmula de soma total do ano na linha 15
+         var colunaCategoria = String.fromCharCode(65 + posicaoInsercao - 1);
+         var formulaTotal = `=SUM($${colunaCategoria}$2:$${colunaCategoria}$13)`;
+         planilhaReceitas.getRange(15, posicaoInsercao).setFormula(formulaTotal);
+
+         // sendMessage(id, `🔧 *Debug:* Fórmula de total anual adicionada na linha 15: ${formulaTotal}`);
+
+         // sendMessage(id, `✅ *Debug:* Coluna de receita criada com sucesso para categoria: ${categoria} na coluna ${colunaCategoria} com cor ${corCategoria}`);
+
+         // Verificar se a cor foi realmente aplicada
+         Utilities.sleep(1000); // Aguardar 1 segundo para a cor ser aplicada
+         var corVerificada = planilhaReceitas.getRange(1, posicaoInsercao).getBackground();
+         if (corVerificada !== corCategoria) {
+            console.log(`⚠️ Cor não foi aplicada corretamente. Esperada: ${corCategoria}, Aplicada: ${corVerificada}`);
+            // Tentar aplicar novamente
+            planilhaReceitas.getRange(1, posicaoInsercao).setBackground(corCategoria);
+         }
+
+         // Recriar os gráficos de receitas (gráfico de pizza) com os totais
+         recriarGraficoReceitasCategorias(idPlanilha, id);
+         recriarGraficoReceitasApunhadoAnual(idPlanilha, id);
+      } else {
+         // sendMessage(id, `ℹ️ *Debug:* Categoria de receita ${categoria} já existe no Painel de receitas na coluna ${colunaExistente + 1}`);
+
+         // Recriar os gráficos mesmo quando a categoria já existe para garantir que estão atualizados
+         recriarGraficoReceitasCategorias(idPlanilha, id);
+         recriarGraficoReceitasApunhadoAnual(idPlanilha, id);
+      }
+
+   } catch (error) {
+      // sendMessage(id, `❌ *Debug - Erro ao verificar/criar coluna de categoria de receita:* ${error.message}`);
+   }
+}
+
+function recriarGraficoReceitasCategorias(idPlanilha, id) {
+   try {
+      // sendMessage(id, `🔄 *Debug:* Recriando gráfico "Receitas - Categorias"...`);
+
+      // Abrir a planilha "Painel de receitas"
+      var planilhaReceitas = SpreadsheetApp.openById(idPlanilha).getSheetByName("Painel de receitas");
+      if (!planilhaReceitas) {
+         // sendMessage(id, "❌ *Debug:* Aba 'Painel de receitas' não encontrada para recriar gráfico de categorias");
+         return;
+      }
+
+      // Buscar dados da planilha
+      var dados = planilhaReceitas.getDataRange().getValues();
+      if (dados.length === 0) {
+         // sendMessage(id, "❌ *Debug:* Planilha 'Painel de receitas' está vazia para recriar gráfico de categorias");
+         return;
+      }
+
+      var cabecalho = dados[0];
+
+      // Encontrar a coluna "Receita Total" (zero-based index)
+      var colunaReceitaTotal = -1;
+      for (var j = 0; j < cabecalho.length; j++) {
+         var nomeColunaLower = cabecalho[j].toString().toLowerCase();
+         if (nomeColunaLower.includes('receita') && nomeColunaLower.includes('total')) {
+            colunaReceitaTotal = j;
+            break;
+         }
+      }
+      if (colunaReceitaTotal === -1) {
+         // sendMessage(id, "❌ *Debug:* Coluna 'Receita Total' não encontrada para recriar gráfico de categorias");
+         return;
+      }
+
+      // Construir o range: categorias na linha 1, valores na linha 15, começando em C
+      var colunaInicio = 3; // Coluna C (1-based)
+      var numColunas = colunaReceitaTotal - (colunaInicio - 1);
+
+      // sendMessage(id, `🔧 *Debug:* Coluna "Receita Total" encontrada na posição ${colunaReceitaTotal + 1}`);
+      // sendMessage(id, `🔧 *Debug:* Número de colunas de categorias: ${numColunas} (da coluna ${colunaInicio} até ${colunaReceitaTotal})`);
+
+      if (numColunas <= 0) {
+         // sendMessage(id, "❌ *Debug:* Não há colunas de categorias antes da coluna 'Receita Total'");
+         return;
+      }
+
+      var intervaloCategorias = planilhaReceitas.getRange(1, colunaInicio, 1, numColunas);
+      var intervaloValores = planilhaReceitas.getRange(15, colunaInicio, 1, numColunas);
+
+      // Debug: mostrar quais categorias estão sendo incluídas
+      var categoriasIncluidas = [];
+      for (var i = colunaInicio - 1; i < colunaReceitaTotal; i++) {
+         if (cabecalho[i] && cabecalho[i].toString().trim() !== '') {
+            categoriasIncluidas.push(cabecalho[i].toString().trim());
+         }
+      }
+      // sendMessage(id, `🔧 *Debug:* Categorias incluídas no gráfico: ${categoriasIncluidas.join(', ')}`);
+
+      // sendMessage(id, `🔧 *Debug:* Ranges preparados: categorias ${intervaloCategorias.getA1Notation()} valores ${intervaloValores.getA1Notation()}`);
+
+      // Remover gráficos anteriores com título correspondente
+      var graficos = planilhaReceitas.getCharts();
+      for (var k = 0; k < graficos.length; k++) {
+         try {
+            var nomeGrafico = graficos[k].getOptions().get('title');
+            if (nomeGrafico && nomeGrafico.includes("Receitas - Categorias")) {
+               planilhaReceitas.removeChart(graficos[k]);
+               // sendMessage(id, `🗑️ *Debug:* Gráfico existente "Receitas - Categorias" removido`);
+               // continua removendo todos que coincidirem
+            }
+         } catch (e) {
+            // ignorar erros ao ler opções
+         }
+      }
+
+      // Montar o builder genérico com os dois ranges e instruções de merge/transpose
+      // sendMessage(id, `🔧 *Debug:* Criando builder do gráfico...`);
+
+      var builder = planilhaReceitas.newChart()
+         .addRange(intervaloCategorias)
+         .addRange(intervaloValores)
+         .setMergeStrategy(Charts.ChartMergeStrategy.MERGE_ROWS) // combina verticalmente
+         .setTransposeRowsAndColumns(true)                      // transpõe para ter colunas Categoria | Valor
+         .setNumHeaders(0)                                     // trata a primeira linha como cabeçalho
+         .setPosition(18, 10, 0, 0)
+         .setOption('title', 'Receitas - Categorias')
+         .setOption('width', 500)
+         .setOption('height', 400)
+         .setOption('pieSliceText', 'percentage')
+         .setOption('pieHole', 0.4);
+
+      // sendMessage(id, `🔧 *Debug:* Builder criado com sucesso`);
+
+      // Tentar usar o builder específico de PIE para garantir legenda;
+      // se falhar, usar fallback com setOption('legend', ...)
+      var novoGrafico;
+      try {
+         // sendMessage(id, `🔧 *Debug:* Tentando criar gráfico de pizza...`);
+         novoGrafico = builder.asPieChart()                       // converte para Pie builder
+            .setLegendPosition(Charts.Position.RIGHT) // método específico para posição da legenda
+            .build();
+         // sendMessage(id, `🔧 *Debug:* Gráfico de pizza criado com sucesso`);
+      } catch (e) {
+         // fallback (alguns ambientes podem não expor setLegendPosition)
+         // sendMessage(id, `⚠️ *Debug:* setLegendPosition falhou, usando fallback setOption('legend', ...) — ${e.message}`);
+         try {
+            novoGrafico = builder
+               .setOption('legend', { position: 'right' })
+               .build();
+            // sendMessage(id, `🔧 *Debug:* Gráfico criado com fallback`);
+         } catch (e2) {
+            // sendMessage(id, `❌ *Debug:* Erro ao criar gráfico com fallback: ${e2.message}`);
+            return;
+         }
+      }
+
+      // sendMessage(id, `🔧 *Debug:* Inserindo gráfico na planilha...`);
+      planilhaReceitas.insertChart(novoGrafico);
+
+      // sendMessage(id, `✅ *Debug:* Gráfico "Receitas - Categorias" recriado com sucesso!`);
+   } catch (error) {
+      // sendMessage(id, `❌ *Debug - Erro ao recriar gráfico de categorias de receitas:* ${error.message}`);
+   }
+}
+
+function recriarGraficoReceitasApunhadoAnual(idPlanilha, id) {
+   try {
+      // sendMessage(id, `🔄 *Debug:* Recriando gráfico "Receita - Apunhado anual"...`);
+
+      // Abrir a planilha "Painel de receitas"
+      var planilhaReceitas = SpreadsheetApp.openById(idPlanilha).getSheetByName("Painel de receitas");
+      if (!planilhaReceitas) {
+         // sendMessage(id, "❌ *Debug:* Aba 'Painel de receitas' não encontrada para recriar gráfico apunhado anual");
+         return;
+      }
+
+      // Buscar dados da planilha
+      var dados = planilhaReceitas.getDataRange().getValues();
+      if (dados.length === 0) {
+         // sendMessage(id, "❌ *Debug:* Planilha 'Painel de receitas' está vazia para recriar gráfico apunhado anual");
+         return;
+      }
+
+      var cabecalho = dados[0];
+
+      // Encontrar a coluna "Receita Total" (zero-based index)
+      var colunaReceitaTotal = -1;
+      for (var j = 0; j < cabecalho.length; j++) {
+         var nomeColunaLower = cabecalho[j].toString().toLowerCase();
+         if (nomeColunaLower.includes('receita') && nomeColunaLower.includes('total')) {
+            colunaReceitaTotal = j;
+            break;
+         }
+      }
+      if (colunaReceitaTotal === -1) {
+         // sendMessage(id, "❌ *Debug:* Coluna 'Receita Total' não encontrada para recriar gráfico apunhado anual");
+         return;
+      }
+
+      // Encontrar a coluna "Início" para usar como eixo Y
+      var colunaInicioEixoY = -1;
+      for (var j = 0; j < cabecalho.length; j++) {
+         var nomeColunaLower = cabecalho[j].toString().toLowerCase();
+         if (nomeColunaLower.includes('início')) {
+            colunaInicioEixoY = j;
+            break;
+         }
+      }
+      if (colunaInicioEixoY === -1) {
+         // sendMessage(id, "❌ *Debug:* Coluna 'Início' não encontrada para usar como eixo Y");
+         return;
+      }
+
+      // Construir o range: da coluna B1 até coluna X (antes da coluna "Receita Total")
+      var colunaInicio = 2; // Coluna B (1-based)
+      var colunaFim = colunaReceitaTotal; // colunaReceitaTotal é zero-based, então é a última coluna antes de "Receita Total"
+      var numColunas = colunaFim - colunaInicio + 1; // +1 porque queremos incluir a última coluna
+
+      // sendMessage(id, `🔧 *Debug:* Coluna "Receita Total" encontrada na posição ${colunaReceitaTotal + 1} (zero-based: ${colunaReceitaTotal})`);
+      // sendMessage(id, `🔧 *Debug:* Coluna "Início" encontrada na posição ${colunaInicioEixoY + 1} (zero-based: ${colunaInicioEixoY})`);
+      // sendMessage(id, `🔧 *Debug:* Número de colunas de dados: ${numColunas} (da coluna ${colunaInicio} até ${colunaFim + 1})`);
+      // sendMessage(id, `🔧 *Debug:* Range será: B1 até ${String.fromCharCode(65 + colunaFim)}1`);
+
+      if (numColunas <= 0) {
+         // sendMessage(id, "❌ *Debug:* Não há colunas de dados antes da coluna 'Receita Total'");
+         return;
+      }
+
+      // Usar linha 1 como cabeçalho e pegar dados de todas as linhas disponíveis
+      var numLinhas = planilhaReceitas.getLastRow();
+      var intervaloDados = planilhaReceitas.getRange(1, colunaInicio, numLinhas, numColunas);
+
+      // Debug: mostrar quais categorias estão sendo incluídas
+      var categoriasIncluidas = [];
+      for (var i = colunaInicio - 1; i <= colunaFim; i++) {
+         if (cabecalho[i] && cabecalho[i].toString().trim() !== '') {
+            categoriasIncluidas.push(cabecalho[i].toString().trim());
+         }
+      }
+      // sendMessage(id, `🔧 *Debug:* Categorias incluídas no gráfico apunhado anual: ${categoriasIncluidas.join(', ')}`);
+
+      // sendMessage(id, `🔧 *Debug:* Range preparado: ${intervaloDados.getA1Notation()}`);
+
+      // Remover gráficos anteriores com título correspondente
+      var graficos = planilhaReceitas.getCharts();
+      for (var k = 0; k < graficos.length; k++) {
+         try {
+            var nomeGrafico = graficos[k].getOptions().get('title');
+            if (nomeGrafico && nomeGrafico.includes("Receita - Apunhado anual")) {
+               planilhaReceitas.removeChart(graficos[k]);
+               // sendMessage(id, `🗑️ *Debug:* Gráfico existente "Receita - Apunhado anual" removido`);
+            }
+         } catch (e) {
+            // ignorar erros ao ler opções
+         }
+      }
+
+      // Montar o builder genérico com o range de dados
+      // sendMessage(id, `🔧 *Debug:* Criando builder do gráfico apunhado anual...`);
+
+      var builder = planilhaReceitas.newChart()
+         .addRange(intervaloDados)
+         .setNumHeaders(1)                                     // trata a primeira linha como cabeçalho
+         .setPosition(18, 1, 0, 0)                             // posição diferente do gráfico de categorias
+         .setOption('title', 'Receita - Apunhado anual')
+         .setOption('width', 800)
+         .setOption('height', 600)
+         .setOption('isStacked', true)
+         .setOption('hAxis', { title: 'Valor (R$)' })
+         .setOption('vAxis', { title: 'Categorias' });
+
+      // sendMessage(id, `🔧 *Debug:* Builder do gráfico apunhado anual criado com sucesso`);
+
+      // Tentar usar o builder específico de BAR para barras empilhadas horizontais;
+      // se falhar, usar fallback com setOption('legend', ...)
+      var novoGrafico;
+      try {
+         // sendMessage(id, `🔧 *Debug:* Tentando criar gráfico de barras empilhadas apunhado anual...`);
+         novoGrafico = builder.asBarChart()                      // converte para Bar builder
+            .setLegendPosition(Charts.Position.RIGHT) // método específico para posição da legenda
+            .build();
+         // sendMessage(id, `🔧 *Debug:* Gráfico de barras empilhadas apunhado anual criado com sucesso`);
+      } catch (e) {
+         // fallback (alguns ambientes podem não expor setLegendPosition)
+         // sendMessage(id, `⚠️ *Debug:* setLegendPosition falhou, usando fallback setOption('legend', ...) — ${e.message}`);
+         try {
+            novoGrafico = builder
+               .setOption('legend', { position: 'right' })
+               .build();
+            // sendMessage(id, `🔧 *Debug:* Gráfico apunhado anual criado com fallback`);
+         } catch (e2) {
+            // sendMessage(id, `❌ *Debug:* Erro ao criar gráfico apunhado anual com fallback: ${e2.message}`);
+            return;
+         }
+      }
+
+      // sendMessage(id, `🔧 *Debug:* Inserindo gráfico apunhado anual na planilha...`);
+      planilhaReceitas.insertChart(novoGrafico);
+
+      // sendMessage(id, `✅ *Debug:* Gráfico "Receita - Apunhado anual" recriado com sucesso!`);
+   } catch (error) {
+      // sendMessage(id, `❌ *Debug - Erro ao recriar gráfico apunhado anual de receitas:* ${error.message}`);
+   }
+}
+
+function recriarGraficoGastosApunhadoMensal(idPlanilha, id) {
+   try {
+      // sendMessage(id, `🔄 *Debug:* Recriando gráfico "Gastos - Apunhado Mensal"...`);
 
       // Abrir a planilha "Resumo mensal"
       var planilhaResumo = SpreadsheetApp.openById(idPlanilha).getSheetByName("Resumo mensal");
       if (!planilhaResumo) {
-         sendMessage(id, "❌ *Debug:* Aba 'Resumo mensal' não encontrada para recriar gráfico de categorias");
+         // sendMessage(id, "❌ *Debug:* Aba 'Resumo mensal' não encontrada para recriar gráfico apunhado mensal");
          return;
       }
 
       // Buscar dados da planilha
       var dados = planilhaResumo.getDataRange().getValues();
       if (dados.length === 0) {
-         sendMessage(id, "❌ *Debug:* Planilha 'Resumo mensal' está vazia para recriar gráfico de categorias");
+         // sendMessage(id, "❌ *Debug:* Planilha 'Resumo mensal' está vazia para recriar gráfico apunhado mensal");
          return;
       }
 
@@ -3130,7 +4225,147 @@ function recriarGraficoGastosCategorias(idPlanilha, id) {
          }
       }
       if (colunaTotalGasto === -1) {
-         sendMessage(id, "❌ *Debug:* Coluna 'Total Gasto' não encontrada para recriar gráfico de categorias");
+         // sendMessage(id, "❌ *Debug:* Coluna 'Total Gasto' não encontrada para recriar gráfico apunhado mensal");
+         return;
+      }
+
+      // Encontrar a coluna "Início" para usar como eixo Y
+      var colunaInicioEixoY = -1;
+      for (var j = 0; j < cabecalho.length; j++) {
+         var nomeColunaLower = cabecalho[j].toString().toLowerCase();
+         if (nomeColunaLower.includes('início')) {
+            colunaInicioEixoY = j;
+            break;
+         }
+      }
+      if (colunaInicioEixoY === -1) {
+         // sendMessage(id, "❌ *Debug:* Coluna 'Início' não encontrada para usar como eixo Y");
+         return;
+      }
+
+      // Construir o range: da coluna B1 até coluna X (antes da coluna "Total Gasto")
+      var colunaInicio = 2; // Coluna B (1-based)
+      var colunaFim = colunaTotalGasto; // colunaTotalGasto é zero-based, então é a última coluna antes de "Total Gasto"
+      var numColunas = colunaFim - colunaInicio + 1; // +1 porque queremos incluir a última coluna
+
+      // sendMessage(id, `🔧 *Debug:* Coluna "Total Gasto" encontrada na posição ${colunaTotalGasto + 1} (zero-based: ${colunaTotalGasto})`);
+      // sendMessage(id, `🔧 *Debug:* Coluna "Início" encontrada na posição ${colunaInicioEixoY + 1} (zero-based: ${colunaInicioEixoY})`);
+      // sendMessage(id, `🔧 *Debug:* Número de colunas de dados: ${numColunas} (da coluna ${colunaInicio} até ${colunaFim + 1})`);
+      // sendMessage(id, `🔧 *Debug:* Range será: B1 até ${String.fromCharCode(65 + colunaFim)}1`);
+
+      if (numColunas <= 0) {
+         // sendMessage(id, "❌ *Debug:* Não há colunas de dados antes da coluna 'Total Gasto'");
+         return;
+      }
+
+      // Usar linha 1 como cabeçalho e pegar dados de todas as linhas disponíveis
+      var numLinhas = planilhaResumo.getLastRow();
+      var intervaloDados = planilhaResumo.getRange(1, colunaInicio, numLinhas, numColunas);
+
+      // Debug: mostrar quais categorias estão sendo incluídas
+      var categoriasIncluidas = [];
+      for (var i = colunaInicio - 1; i <= colunaFim; i++) {
+         if (cabecalho[i] && cabecalho[i].toString().trim() !== '') {
+            categoriasIncluidas.push(cabecalho[i].toString().trim());
+         }
+      }
+      // sendMessage(id, `🔧 *Debug:* Categorias incluídas no gráfico apunhado mensal: ${categoriasIncluidas.join(', ')}`);
+
+      // sendMessage(id, `🔧 *Debug:* Range preparado: ${intervaloDados.getA1Notation()}`);
+
+      // Remover gráficos anteriores com título correspondente
+      var graficos = planilhaResumo.getCharts();
+      for (var k = 0; k < graficos.length; k++) {
+         try {
+            var nomeGrafico = graficos[k].getOptions().get('title');
+            if (nomeGrafico && nomeGrafico.includes("Gastos - Apunhado Mensal")) {
+               planilhaResumo.removeChart(graficos[k]);
+               // sendMessage(id, `🗑️ *Debug:* Gráfico existente "Gastos - Apunhado Mensal" removido`);
+            }
+         } catch (e) {
+            // ignorar erros ao ler opções
+         }
+      }
+
+      // Montar o builder genérico com o range de dados
+      // sendMessage(id, `🔧 *Debug:* Criando builder do gráfico apunhado mensal...`);
+
+      var builder = planilhaResumo.newChart()
+         .addRange(intervaloDados)
+         .setNumHeaders(1)                                     // trata a primeira linha como cabeçalho
+         .setPosition(18, 1, 0, 0)                             // posição diferente do gráfico de categorias
+         .setOption('title', 'Gastos - Apunhado Mensal')
+         .setOption('width', 800)
+         .setOption('height', 600)
+         .setOption('isStacked', true)
+         .setOption('hAxis', { title: 'Valor (R$)' })
+         .setOption('vAxis', { title: 'Categorias' });
+
+      // sendMessage(id, `🔧 *Debug:* Builder do gráfico apunhado mensal criado com sucesso`);
+
+      // Tentar usar o builder específico de BAR para barras empilhadas horizontais;
+      // se falhar, usar fallback com setOption('legend', ...)
+      var novoGrafico;
+      try {
+         // sendMessage(id, `🔧 *Debug:* Tentando criar gráfico de barras empilhadas apunhado mensal...`);
+         novoGrafico = builder.asBarChart()                      // converte para Bar builder
+            .setLegendPosition(Charts.Position.RIGHT) // método específico para posição da legenda
+            .build();
+         // sendMessage(id, `🔧 *Debug:* Gráfico de barras empilhadas apunhado mensal criado com sucesso`);
+      } catch (e) {
+         // fallback (alguns ambientes podem não expor setLegendPosition)
+         // sendMessage(id, `⚠️ *Debug:* setLegendPosition falhou, usando fallback setOption('legend', ...) — ${e.message}`);
+         try {
+            novoGrafico = builder
+               .setOption('legend', { position: 'right' })
+               .build();
+            // sendMessage(id, `🔧 *Debug:* Gráfico apunhado mensal criado com fallback`);
+         } catch (e2) {
+            // sendMessage(id, `❌ *Debug:* Erro ao criar gráfico apunhado mensal com fallback: ${e2.message}`);
+            return;
+         }
+      }
+
+      // sendMessage(id, `🔧 *Debug:* Inserindo gráfico apunhado mensal na planilha...`);
+      planilhaResumo.insertChart(novoGrafico);
+
+      // sendMessage(id, `✅ *Debug:* Gráfico "Gastos - Apunhado Mensal" recriado com sucesso!`);
+   } catch (error) {
+      // sendMessage(id, `❌ *Debug - Erro ao recriar gráfico apunhado mensal de gastos:* ${error.message}`);
+   }
+}
+
+function recriarGraficoGastosCategorias(idPlanilha, id) {
+   try {
+      // sendMessage(id, `🔄 *Debug:* Recriando gráfico "Gastos - Categorias"...`);
+
+      // Abrir a planilha "Resumo mensal"
+      var planilhaResumo = SpreadsheetApp.openById(idPlanilha).getSheetByName("Resumo mensal");
+      if (!planilhaResumo) {
+         // sendMessage(id, "❌ *Debug:* Aba 'Resumo mensal' não encontrada para recriar gráfico de categorias");
+         return;
+      }
+
+      // Buscar dados da planilha
+      var dados = planilhaResumo.getDataRange().getValues();
+      if (dados.length === 0) {
+         // sendMessage(id, "❌ *Debug:* Planilha 'Resumo mensal' está vazia para recriar gráfico de categorias");
+         return;
+      }
+
+      var cabecalho = dados[0];
+
+      // Encontrar a coluna "Total Gasto" (zero-based index)
+      var colunaTotalGasto = -1;
+      for (var j = 0; j < cabecalho.length; j++) {
+         var nomeColunaLower = cabecalho[j].toString().toLowerCase();
+         if (nomeColunaLower.includes('total') && nomeColunaLower.includes('gasto')) {
+            colunaTotalGasto = j;
+            break;
+         }
+      }
+      if (colunaTotalGasto === -1) {
+         // sendMessage(id, "❌ *Debug:* Coluna 'Total Gasto' não encontrada para recriar gráfico de categorias");
          return;
       }
 
@@ -3138,14 +4373,14 @@ function recriarGraficoGastosCategorias(idPlanilha, id) {
       var colunaInicio = 3; // Coluna C (1-based)
       var numColunas = colunaTotalGasto - (colunaInicio - 1);
       if (numColunas <= 0) {
-         sendMessage(id, "❌ *Debug:* Não há colunas de categorias antes da coluna 'Total Gasto'");
+         // sendMessage(id, "❌ *Debug:* Não há colunas de categorias antes da coluna 'Total Gasto'");
          return;
       }
 
       var intervaloCategorias = planilhaResumo.getRange(1, colunaInicio, 1, numColunas);
       var intervaloValores = planilhaResumo.getRange(15, colunaInicio, 1, numColunas);
 
-      sendMessage(id, `🔧 *Debug:* Ranges preparados: categorias ${intervaloCategorias.getA1Notation()} valores ${intervaloValores.getA1Notation()}`);
+      // sendMessage(id, `🔧 *Debug:* Ranges preparados: categorias ${intervaloCategorias.getA1Notation()} valores ${intervaloValores.getA1Notation()}`);
 
       // Remover gráficos anteriores com título correspondente
       var graficos = planilhaResumo.getCharts();
@@ -3154,7 +4389,7 @@ function recriarGraficoGastosCategorias(idPlanilha, id) {
             var nomeGrafico = graficos[k].getOptions().get('title');
             if (nomeGrafico && nomeGrafico.includes("Gastos - Categorias")) {
                planilhaResumo.removeChart(graficos[k]);
-               sendMessage(id, `🗑️ *Debug:* Gráfico existente "Gastos - Categorias" removido`);
+               // sendMessage(id, `🗑️ *Debug:* Gráfico existente "Gastos - Categorias" removido`);
                // continua removendo todos que coincidirem
             }
          } catch (e) {
@@ -3185,7 +4420,7 @@ function recriarGraficoGastosCategorias(idPlanilha, id) {
             .build();
       } catch (e) {
          // fallback (alguns ambientes podem não expor setLegendPosition)
-         sendMessage(id, `⚠️ *Debug:* setLegendPosition falhou, usando fallback setOption('legend', ...) — ${e.message}`);
+         // sendMessage(id, `⚠️ *Debug:* setLegendPosition falhou, usando fallback setOption('legend', ...) — ${e.message}`);
          novoGrafico = builder
             .setOption('legend', { position: 'right' })
             .build();
@@ -3193,12 +4428,352 @@ function recriarGraficoGastosCategorias(idPlanilha, id) {
 
       planilhaResumo.insertChart(novoGrafico);
 
-      sendMessage(id, `✅ *Debug:* Gráfico "Gastos - Categorias" recriado com sucesso!`);
+      // sendMessage(id, `✅ *Debug:* Gráfico "Gastos - Categorias" recriado com sucesso!`);
    } catch (error) {
-      sendMessage(id, `❌ *Debug - Erro ao recriar gráfico de categorias:* ${error.message}`);
+      // sendMessage(id, `❌ *Debug - Erro ao recriar gráfico de categorias:* ${error.message}`);
    }
 }
 
+// Funções principais para os botões do menu de gráficos
 
+function enviarGraficoDespesasCategorias(id) {
+   sendMessage(id, "✏️ *Processando gráfico de categorias de despesas...*");
+
+   try {
+      var dateNow = new Date();
+      var year = dateNow.getFullYear();
+
+      // Tentar capturar o gráfico existente da planilha
+      var imagemGrafico = capturarGraficoDespesasCategorias(id_planilha, year, id);
+
+      if (imagemGrafico) {
+         // Se conseguiu capturar o gráfico existente, enviar
+         var caption = `Gráfico "Gastos - Categorias" - ${year} - Gráfico atualizado da sua planilha`;
+         sendPhoto(id, imagemGrafico, caption);
+         return;
+      }
+
+      // Se não conseguiu capturar, criar um novo gráfico como fallback
+      sendMessage(id, "Gráfico de categorias existente não encontrado. Criando gráfico temporário...");
+
+      // Abrir a planilha de despesas
+      var planilha = SpreadsheetApp.openById(id_planilha).getSheetByName("Despesas");
+      var dados = planilha.getDataRange().getValues();
+
+      // Filtrar dados do ano atual
+      var categorias = {};
+
+      for (var i = 1; i < dados.length; i++) { // Pular cabeçalho
+         var dataDespesa = dados[i][1]; // Coluna da data da compra
+         var valor = parseFloat(dados[i][3]); // Coluna do valor
+         var categoria = dados[i][4]; // Coluna da categoria
+
+         if (dataDespesa && valor && categoria) {
+            // Verificar se é do ano atual
+            if (typeof dataDespesa === 'string' && dataDespesa.includes('/')) {
+               var partesData = dataDespesa.split('/');
+               var anoDespesa = parseInt(partesData[2]);
+
+               if (anoDespesa === year) {
+                  if (categorias[categoria]) {
+                     categorias[categoria] += valor;
+                  } else {
+                     categorias[categoria] = valor;
+                  }
+               }
+            }
+         }
+      }
+
+      if (Object.keys(categorias).length === 0) {
+         sendMessage(id, "📊 *Nenhuma despesa encontrada para o ano atual.*");
+         return;
+      }
+
+      // Criar dados para o gráfico
+      var dadosGrafico = [];
+      for (var cat in categorias) {
+         dadosGrafico.push([cat, categorias[cat]]);
+      }
+
+      // Ordenar por valor (maior para menor)
+      dadosGrafico.sort(function (a, b) {
+         return b[1] - a[1];
+      });
+
+      // Criar gráfico usando Google Charts como fallback
+      var chartUrl = criarGraficoCategoriasGoogleCharts(dadosGrafico, year);
+
+      if (chartUrl) {
+         var caption = `Gráfico de Categorias - ${year} - `;
+         for (var i = 0; i < dadosGrafico.length; i++) {
+            caption += `${dadosGrafico[i][0]}: R$ ${dadosGrafico[i][1].toFixed(2)} | `;
+         }
+
+         sendPhoto(id, chartUrl, caption);
+      } else {
+         sendMessage(id, "❌ *Erro ao gerar o gráfico de categorias. Tente novamente.*");
+      }
+
+   } catch (error) {
+      sendMessage(id, "❌ *Erro ao gerar gráfico de categorias:* " + error.message);
+   }
+}
+
+function enviarGraficoDespesasMensal(id) {
+   sendMessage(id, "✏️ *Processando gráfico mensal de despesas...*");
+
+   try {
+      var dateNow = new Date();
+      var month = dateNow.getMonth() + 1;
+      var year = dateNow.getFullYear();
+
+      // Tentar primeiro capturar o gráfico existente da planilha
+      var imagemGrafico = capturarGraficoExistente(id_planilha, month, year, id);
+
+      if (imagemGrafico) {
+         // Se conseguiu capturar o gráfico existente, enviar
+         var caption = `Gráfico "Gastos - Apunhado Mensal" - ${month}/${year} - Gráfico atualizado da sua planilha`;
+         sendPhoto(id, imagemGrafico, caption);
+         return;
+      }
+
+      // Se não conseguiu capturar, criar um novo gráfico como fallback
+      sendMessage(id, "Gráfico existente não encontrado. Criando gráfico temporário...");
+
+      // Abrir a planilha de despesas
+      var planilha = SpreadsheetApp.openById(id_planilha).getSheetByName("Despesas");
+      var dados = planilha.getDataRange().getValues();
+
+      // Filtrar dados do mês atual
+      var categorias = {};
+
+      for (var i = 1; i < dados.length; i++) { // Pular cabeçalho
+         var dataDespesa = dados[i][1]; // Coluna da data da compra
+         var valor = parseFloat(dados[i][3]); // Coluna do valor
+         var categoria = dados[i][4]; // Coluna da categoria
+
+         if (dataDespesa && valor && categoria) {
+            // Verificar se é do mês atual
+            if (typeof dataDespesa === 'string' && dataDespesa.includes('/')) {
+               var partesData = dataDespesa.split('/');
+               var mesDespesa = parseInt(partesData[1]);
+               var anoDespesa = parseInt(partesData[2]);
+
+               if (mesDespesa === month && anoDespesa === year) {
+                  if (categorias[categoria]) {
+                     categorias[categoria] += valor;
+                  } else {
+                     categorias[categoria] = valor;
+                  }
+               }
+            }
+         }
+      }
+
+      if (Object.keys(categorias).length === 0) {
+         sendMessage(id, "📊 *Nenhuma despesa encontrada para o mês atual.*");
+         return;
+      }
+
+      // Criar dados para o gráfico
+      var dadosGrafico = [];
+      for (var cat in categorias) {
+         dadosGrafico.push([cat, categorias[cat]]);
+      }
+
+      // Ordenar por valor (maior para menor)
+      dadosGrafico.sort(function (a, b) {
+         return b[1] - a[1];
+      });
+
+      // Criar gráfico usando Google Charts como fallback
+      var chartUrl = criarGraficoGoogleCharts(dadosGrafico, month, year);
+
+      if (chartUrl) {
+         var caption = `Gráfico de Despesas - ${month}/${year} - `;
+         for (var i = 0; i < dadosGrafico.length; i++) {
+            caption += `${dadosGrafico[i][0]}: R$ ${dadosGrafico[i][1].toFixed(2)} | `;
+         }
+
+         sendPhoto(id, chartUrl, caption);
+      } else {
+         sendMessage(id, "❌ *Erro ao gerar o gráfico. Tente novamente.*");
+      }
+
+   } catch (error) {
+      sendMessage(id, "❌ *Erro ao gerar gráfico:* " + error.message);
+   }
+}
+
+function enviarGraficoReceitasCategorias(id) {
+   sendMessage(id, "✏️ *Processando gráfico de categorias de receitas...*");
+
+   try {
+      var dateNow = new Date();
+      var year = dateNow.getFullYear();
+
+      // Tentar capturar o gráfico existente da planilha
+      var imagemGrafico = capturarGraficoReceitasCategorias(id_planilha, year, id);
+
+      if (imagemGrafico) {
+         // Se conseguiu capturar o gráfico existente, enviar
+         var caption = `Gráfico "Receitas - Categorias" - ${year} - Gráfico atualizado da sua planilha`;
+         sendPhoto(id, imagemGrafico, caption);
+         return;
+      }
+
+      // Se não conseguiu capturar, criar um novo gráfico como fallback
+      sendMessage(id, "Gráfico de receitas existente não encontrado. Criando gráfico temporário...");
+
+      // Abrir a planilha de receitas
+      var planilha = SpreadsheetApp.openById(id_planilha).getSheetByName("Receitas");
+      var dados = planilha.getDataRange().getValues();
+
+      // Filtrar dados do ano atual
+      var categorias = {};
+
+      for (var i = 1; i < dados.length; i++) { // Pular cabeçalho
+         var dataReceita = dados[i][1]; // Coluna da data da receita
+         var valor = parseFloat(dados[i][3]); // Coluna do valor
+         var categoria = dados[i][4]; // Coluna da categoria
+
+         if (dataReceita && valor && categoria) {
+            // Verificar se é do ano atual
+            if (typeof dataReceita === 'string' && dataReceita.includes('/')) {
+               var partesData = dataReceita.split('/');
+               var anoReceita = parseInt(partesData[2]);
+
+               if (anoReceita === year) {
+                  if (categorias[categoria]) {
+                     categorias[categoria] += valor;
+                  } else {
+                     categorias[categoria] = valor;
+                  }
+               }
+            }
+         }
+      }
+
+      if (Object.keys(categorias).length === 0) {
+         sendMessage(id, "📊 *Nenhuma receita encontrada para o ano atual.*");
+         return;
+      }
+
+      // Criar dados para o gráfico
+      var dadosGrafico = [];
+      for (var cat in categorias) {
+         dadosGrafico.push([cat, categorias[cat]]);
+      }
+
+      // Ordenar por valor (maior para menor)
+      dadosGrafico.sort(function (a, b) {
+         return b[1] - a[1];
+      });
+
+      // Criar gráfico usando Google Charts como fallback
+      var chartUrl = criarGraficoReceitasGoogleCharts(dadosGrafico, year);
+
+      if (chartUrl) {
+         var caption = `Gráfico de Receitas - ${year} - `;
+         for (var i = 0; i < dadosGrafico.length; i++) {
+            caption += `${dadosGrafico[i][0]}: R$ ${dadosGrafico[i][1].toFixed(2)} | `;
+         }
+
+         sendPhoto(id, chartUrl, caption);
+      } else {
+         sendMessage(id, "❌ *Erro ao gerar o gráfico de receitas. Tente novamente.*");
+      }
+
+   } catch (error) {
+      sendMessage(id, "❌ *Erro ao gerar gráfico de receitas:* " + error.message);
+   }
+}
+
+function enviarGraficoReceitasMensal(id) {
+   sendMessage(id, "✏️ *Processando gráfico mensal de receitas...*");
+
+   try {
+      var dateNow = new Date();
+      var month = dateNow.getMonth() + 1;
+      var year = dateNow.getFullYear();
+
+      // Tentar primeiro capturar o gráfico existente da planilha
+      var imagemGrafico = capturarGraficoReceitasMensal(id_planilha, month, year, id);
+
+      if (imagemGrafico) {
+         // Se conseguiu capturar o gráfico existente, enviar
+         var caption = `Gráfico "Receita - Apunhado anual" - ${month}/${year} - Gráfico atualizado da sua planilha`;
+         sendPhoto(id, imagemGrafico, caption);
+         return;
+      }
+
+      // Se não conseguiu capturar, criar um novo gráfico como fallback
+      sendMessage(id, "Gráfico existente não encontrado. Criando gráfico temporário...");
+
+      // Abrir a planilha de receitas
+      var planilha = SpreadsheetApp.openById(id_planilha).getSheetByName("Receitas");
+      var dados = planilha.getDataRange().getValues();
+
+      // Filtrar dados do mês atual
+      var categorias = {};
+
+      for (var i = 1; i < dados.length; i++) { // Pular cabeçalho
+         var dataReceita = dados[i][1]; // Coluna da data da receita
+         var valor = parseFloat(dados[i][3]); // Coluna do valor
+         var categoria = dados[i][4]; // Coluna da categoria
+
+         if (dataReceita && valor && categoria) {
+            // Verificar se é do mês atual
+            if (typeof dataReceita === 'string' && dataReceita.includes('/')) {
+               var partesData = dataReceita.split('/');
+               var mesReceita = parseInt(partesData[1]);
+               var anoReceita = parseInt(partesData[2]);
+
+               if (mesReceita === month && anoReceita === year) {
+                  if (categorias[categoria]) {
+                     categorias[categoria] += valor;
+                  } else {
+                     categorias[categoria] = valor;
+                  }
+               }
+            }
+         }
+      }
+
+      if (Object.keys(categorias).length === 0) {
+         sendMessage(id, "📊 *Nenhuma receita encontrada para o mês atual.*");
+         return;
+      }
+
+      // Criar dados para o gráfico
+      var dadosGrafico = [];
+      for (var cat in categorias) {
+         dadosGrafico.push([cat, categorias[cat]]);
+      }
+
+      // Ordenar por valor (maior para menor)
+      dadosGrafico.sort(function (a, b) {
+         return b[1] - a[1];
+      });
+
+      // Criar gráfico usando Google Charts como fallback
+      var chartUrl = criarGraficoGoogleCharts(dadosGrafico, month, year);
+
+      if (chartUrl) {
+         var caption = `Gráfico de Receitas - ${month}/${year} - `;
+         for (var i = 0; i < dadosGrafico.length; i++) {
+            caption += `${dadosGrafico[i][0]}: R$ ${dadosGrafico[i][1].toFixed(2)} | `;
+         }
+
+         sendPhoto(id, chartUrl, caption);
+      } else {
+         sendMessage(id, "❌ *Erro ao gerar o gráfico. Tente novamente.*");
+      }
+
+   } catch (error) {
+      sendMessage(id, "❌ *Erro ao gerar gráfico:* " + error.message);
+   }
+}
 
 
