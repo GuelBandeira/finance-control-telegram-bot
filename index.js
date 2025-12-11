@@ -27,6 +27,19 @@ function sendMessage(id, text, keyBoard = null) {
    UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/', data);
 }
 
+function sendMessagePlain(id, text, keyBoard = null) {
+   var data = {
+      method: "post",
+      payload: {
+         method: "sendMessage",
+         chat_id: String(id),
+         text: text,
+         reply_markup: (keyBoard ? JSON.stringify(keyBoard) : null)
+      }
+   };
+   UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/', data);
+}
+
 function sendPhoto(id, photoUrl, caption = "") {
    var data = {
       method: "post",
@@ -638,6 +651,33 @@ function doPost(e) {
          }
          sendMessage(id, "📋 *Categorias:*\n\nNenhuma categoria encontrada na planilha.\n\nAs categorias são criadas automaticamente quando você adiciona despesas.", opcoes);
       }
+   } else if (textoMensagem == "link" || textoMensagem == "planilha") {
+      // Retornar link da planilha
+      var linkPlanilha = 'https://docs.google.com/spreadsheets/d/' + id_planilha + '/edit';
+
+      var opcoes = {
+         "inline_keyboard": [
+            [{
+               "text": "💰 Orçamento",
+               "callback_data": "orcamento"
+            }],
+            [{
+               "text": "📝 Despesas",
+               "callback_data": "despesas"
+            }],
+            [{
+               "text": "💲 Adicionar Receita",
+               "callback_data": "receita"
+            }],
+            [{
+               "text": "📊 Gráficos",
+               "callback_data": "graficos"
+            }]
+         ]
+      }
+
+      var mensagemLink = '📊 Link da Planilha\n\n' + linkPlanilha + '\n\nClique no link acima para abrir a planilha no celular ou computador.';
+      sendMessagePlain(id, mensagemLink, opcoes);
    } else if (textoMensagem == "orçamento" || textoMensagem == "visualizar orçamento") {
       var dateNow = new Date();
 
@@ -831,7 +871,9 @@ function doPost(e) {
             ]
          }
 
-         sendMessage(id, `✅ *Despesa Adicionada com Sucesso!*\n\n*Descrição:* ${descricao}\n*Valor:* R$ ${parseFloat(despesa['valor']).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n*Categoria:* ${despesa['categoria']}`, opcoes);
+         // Converter valor do formato brasileiro (vírgula) para número
+         var valorNumerico = parseFloat(despesa['valor'].replace(',', '.'));
+         sendMessage(id, `✅ *Despesa Adicionada com Sucesso!*\n\n*Descrição:* ${descricao}\n*Valor:* R$ ${valorNumerico.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n*Categoria:* ${despesa['categoria']}`, opcoes);
       } else {
          // Mostrar menu de opções para mensagens aleatórias
          var opcoes = {
