@@ -2,6 +2,12 @@
 var token = '8349029222:AAFTND93tS8KYmhsC4NsST0HMngKaf9MSq0';
 var id_planilha = '137Dkv4F-98yBUwOZwq6kj1YZZNF3Y7RQ_ml6J11PjOQ';
 var link_planilha = 'https://script.google.com/macros/s/AKfycbwZtWCMfEI9-xCg60tD2osR2gz6iz99guI1nBicXM8RtWm0DjvyTfZ6bWzYd0Ay5d9a/exec';
+
+// Google Gemini (Generative Language API)
+// - Crie uma API key no Google AI Studio / Google Cloud e cole abaixo
+// - Docs: https://ai.google.dev/gemini-api/docs
+var GEMINI_API_KEY = 'AIzaSyBE2bFQzqU38_1Q5yRPkQWzR63VK_mA56s'; // <-- Cole sua chave aqui
+var GEMINI_MODEL = 'gemini-3-flash-preview'; // exemplos: gemini-1.5-flash, gemini-1.5-pro
 //FIM CONFIGURAÇÕES ---------------------------------------------------------------------------------------------
 
 
@@ -11,6 +17,162 @@ var telegram_url = 'https://api.telegram.org/bot' + token;
 function setWebhook() {
    var url = telegram_url + "/setWebhook?url=" + link_planilha;
    var response = UrlFetchApp.fetch(url);
+}
+
+function analisarComIA(textoUsuario, categoriasExistentes, idUsuario) {
+   var url = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + encodeURIComponent(GEMINI_API_KEY);
+
+   // Formata as categorias para a IA saber quais escolher
+   var listaCategorias = categoriasExistentes.join(", ");
+
+   var promptSistema = `
+    Você é um assistente financeiro. Sua tarefa é analisar textos informais ou notificações bancárias e extrair os dados para uma planilha.
+    
+    Categorias disponíveis: [${listaCategorias}].
+    Se a categoria não for óbvia, escolha a mais provável da lista ou crie uma nova genérica como "Outros".
+    
+    Data de hoje para referência: ${dateNow_sem_hora()}.
+    
+    Responda APENAS um JSON estrito (sem markdown, sem \`\`\`) com o seguinte formato:
+    {
+      "descricao": "Nome do estabelecimento ou descrição curta",
+      "valor": "00.00" (use ponto para decimais, apenas números),
+      "categoria": "Nome da Categoria",
+      "tipo": "despesa" (ou "receita" se for entrada de dinheiro),
+      "data": "DD/MM/AAAA" (se não houver data no texto, use a de hoje)
+    }
+  `;
+
+   var payload = {
+      "systemInstruction": {
+         "parts": [{ "text": promptSistema }]
+      },
+      "contents": [
+         {
+            "role": "user",
+            "parts": [{ "text": textoUsuario }]
+         }
+      ],
+      "generationConfig": {
+         "temperature": 0.1
+      }
+   };
+
+   var options = {
+      "method": "post",
+      "contentType": "application/json",
+      "headers": { "Accept-Language": "pt-BR,pt,en-US,en" },
+      "payload": JSON.stringify(payload),
+      "muteHttpExceptions": true
+   };
+
+   try {
+      var limitarTextoTelegram = function (texto, maxLen) {
+         if (!texto) return "";
+         var s = texto.toString();
+         if (s.length <= maxLen) return s;
+         return s.substring(0, maxLen - 20) + "\n...(truncado)...";
+      };
+
+      if (!GEMINI_API_KEY || GEMINI_API_KEY.toString().trim() === '') {
+         if (idUsuario) {
+            sendMessage(idUsuario, "❌ *Debug Gemini:* `GEMINI_API_KEY` não configurada no `index.js`.");
+         }
+         return null;
+      }
+
+      // Debug: Mostrar que está fazendo a requisição
+      if (idUsuario) {
+         sendMessage(idUsuario, "🔍 *Debug Gemini:* Enviando requisição para análise...");
+      }
+
+      var response = UrlFetchApp.fetch(url, options);
+      var responseCode = response.getResponseCode();
+      var responseText = response.getContentText();
+
+      // Debug: Mostrar código de resposta HTTP
+      if (idUsuario) {
+         sendMessage(idUsuario, `🔍 *Debug Gemini:* Código HTTP: ${responseCode}`);
+      }
+
+      // Verificar se a resposta foi bem-sucedida
+      if (responseCode !== 200) {
+         if (idUsuario) {
+            sendMessage(idUsuario, `❌ *Debug Gemini - Erro HTTP:*\n\`\`\`\n${limitarTextoTelegram(responseText, 3500)}\n\`\`\``);
+         }
+         console.error("Erro Gemini HTTP: " + responseCode + " - " + responseText);
+         return null;
+      }
+
+      var json = JSON.parse(responseText);
+
+      // Debug: Mostrar resposta completa do Gemini (truncada)
+      if (idUsuario) {
+         sendMessage(idUsuario, `🔍 *Debug Gemini - Resposta completa:*\n\`\`\`json\n${limitarTextoTelegram(JSON.stringify(json, null, 2), 3500)}\n\`\`\``);
+      }
+
+      // Bloqueios / feedback (quando a requisição passa mas o conteúdo é bloqueado)
+      if (json.promptFeedback && json.promptFeedback.blockReason) {
+         if (idUsuario) {
+            sendMessage(idUsuario, `❌ *Debug Gemini - Bloqueado:* ${json.promptFeedback.blockReason}`);
+         }
+         console.error("Gemini bloqueou a requisição: " + JSON.stringify(json.promptFeedback));
+         return null;
+      }
+
+      // Verificar se há candidates
+      if (!json.candidates || !json.candidates[0] || !json.candidates[0].content || !json.candidates[0].content.parts) {
+         if (idUsuario) {
+            sendMessage(idUsuario, `❌ *Debug Gemini - Resposta inválida:*\nSem candidates/content/parts na resposta`);
+         }
+         console.error("Erro Gemini: Resposta sem candidates/content/parts");
+         return null;
+      }
+
+      // Extrai o texto da resposta (concatena parts)
+      var conteudo = "";
+      for (var i = 0; i < json.candidates[0].content.parts.length; i++) {
+         if (json.candidates[0].content.parts[i] && json.candidates[0].content.parts[i].text) {
+            conteudo += json.candidates[0].content.parts[i].text;
+         }
+      }
+
+      // Debug: Mostrar conteúdo bruto antes da limpeza
+      if (idUsuario) {
+         sendMessage(idUsuario, `🔍 *Debug Gemini - Conteúdo bruto:*\n\`\`\`\n${limitarTextoTelegram(conteudo, 3500)}\n\`\`\``);
+      }
+
+      // Limpeza caso a IA mande markdown (```json ... ```)
+      conteudo = conteudo.replace(/```json/g, "").replace(/```/g, "").trim();
+
+      // Debug: Mostrar conteúdo após limpeza
+      if (idUsuario) {
+         sendMessage(idUsuario, `🔍 *Debug Gemini - Conteúdo limpo:*\n\`\`\`\n${limitarTextoTelegram(conteudo, 3500)}\n\`\`\``);
+      }
+
+      var resultado = JSON.parse(conteudo);
+
+      // Debug: Mostrar resultado final parseado
+      if (idUsuario) {
+         sendMessage(idUsuario, `✅ *Debug Gemini - Resultado parseado:*\n\`\`\`json\n${limitarTextoTelegram(JSON.stringify(resultado, null, 2), 3500)}\n\`\`\``);
+      }
+
+      return resultado;
+   } catch (e) {
+      // Debug: Mostrar erro completo
+      var erroCompleto = "Erro Gemini: " + e.message;
+      if (e.stack) {
+         erroCompleto += "\n\nStack:\n" + e.stack;
+      }
+
+      if (idUsuario) {
+         sendMessage(idUsuario, `❌ *Debug Gemini - Erro:*\n\`\`\`\n${limitarTextoTelegram(erroCompleto, 3500)}\n\`\`\``);
+      }
+
+      console.error(erroCompleto);
+      return null;
+   }
+
 }
 
 function sendMessage(id, text, keyBoard = null) {
@@ -799,6 +961,16 @@ function doPost(e) {
             data_compra_inserida_mensagem = false;
 
          } else if (!validarData(data)) {
+            // Tentar usar IA para processar quando a data é inválida
+            var categorias = buscarCategoriasExistentes(id_planilha) || [];
+            var dadosIA = analisarComIA(textoMensagem, categorias, id);
+
+            if (dadosIA && dadosIA.tipo && dadosIA.tipo.toLowerCase() === 'despesa') {
+               if (processarDespesaComIA(id, dadosIA)) {
+                  return;
+               }
+            }
+
             sendMessage(id, "❌ *Data da compra inválida!*\n\nPor favor, informe a despesa novamente no formato:\n`Data - Descrição - Valor - Categoria`\n\n*Exemplo:* `15/12/2024 - Almoço - 25.50 - Comida`");
          } else {
             despesa['data_compra'] = data;
@@ -875,6 +1047,23 @@ function doPost(e) {
          var valorNumerico = parseFloat(despesa['valor'].replace(',', '.'));
          sendMessage(id, `✅ *Despesa Adicionada com Sucesso!*\n\n*Descrição:* ${descricao}\n*Valor:* R$ ${valorNumerico.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n*Categoria:* ${despesa['categoria']}`, opcoes);
       } else {
+         // Tentar usar IA para processar mensagens que não estão no formato estruturado
+         var categorias = buscarCategoriasExistentes(id_planilha) || [];
+         var dadosIA = analisarComIA(textoMensagem, categorias, id);
+
+         // Tentar processar como despesa se a IA retornou dados válidos
+         // Sempre tenta processar como despesa quando há dados válidos, independente do tipo
+         if (dadosIA && dadosIA.descricao && dadosIA.valor && dadosIA.categoria) {
+            // Forçar tipo como despesa para processar
+            if (!dadosIA.tipo || dadosIA.tipo.toLowerCase() !== 'receita') {
+               dadosIA.tipo = 'despesa';
+               if (processarDespesaComIA(id, dadosIA)) {
+                  return;
+               }
+            }
+         }
+
+         // Só mostrar menu se a IA não conseguiu processar nada
          // Mostrar menu de opções para mensagens aleatórias
          var opcoes = {
             "inline_keyboard": [
@@ -2944,6 +3133,103 @@ function verificarECriarColunaCategoria(idPlanilha, categoria, id) {
 
    } catch (error) {
       // sendMessage(id, `❌ *Debug - Erro ao verificar/criar coluna de categoria:* ${error.message}`);
+   }
+}
+
+function processarDespesaComIA(id, dadosIA) {
+   try {
+      // Validar se os dados da IA são válidos
+      if (!dadosIA || !dadosIA.descricao || !dadosIA.valor || !dadosIA.categoria) {
+         return false;
+      }
+
+      // Validar se é uma despesa (se não tiver tipo definido, assume despesa)
+      if (dadosIA.tipo && dadosIA.tipo.toLowerCase() !== 'despesa') {
+         return false;
+      }
+
+      // Se não tiver tipo definido, assume que é despesa
+
+      // Processar data
+      var data_compra = dadosIA.data || dateNow_sem_hora();
+
+      // Validar data se fornecida
+      if (data_compra && data_compra.includes('/') && !validarData(data_compra)) {
+         return false;
+      }
+
+      // Processar valor (converter de string para número)
+      var valorStr = dadosIA.valor.toString().replace(',', '.');
+      var valor = parseFloat(valorStr);
+
+      // Validar valor
+      if (isNaN(valor) || valor <= 0) {
+         return false;
+      }
+
+      // Formatar categoria
+      var categoria = formatarCategoria(dadosIA.categoria.trim());
+
+      // Formatar data e hora atual
+      var dateNow = new Date();
+      var day = String(dateNow.getDate()).padStart(2, '0');
+      var month = String(dateNow.getMonth() + 1).padStart(2, '0');
+      var year = dateNow.getFullYear();
+      var hours = String(dateNow.getHours()).padStart(2, '0');
+      var minutes = String(dateNow.getMinutes()).padStart(2, '0');
+      var seconds = String(dateNow.getSeconds()).padStart(2, '0');
+
+      var data_hora = day + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds;
+
+      // Adicionar despesa na planilha
+      var planilha = SpreadsheetApp.openById(id_planilha).getSheetByName("Despesas");
+
+      if (!planilha) {
+         return false;
+      }
+
+      // Converter valor para formato brasileiro (vírgula) para armazenar na planilha
+      var valorFormatado = valorStr.replace('.', ',');
+      planilha.appendRow([data_hora, data_compra, dadosIA.descricao.trim(), valorFormatado, categoria]);
+
+      // Verificar e criar coluna automaticamente no "Resumo Mensal" se a categoria não existir
+      verificarECriarColunaCategoria(id_planilha, categoria, id);
+
+      var opcoes = {
+         "inline_keyboard": [
+            [{
+               "text": "➕ Adicionar Despesa",
+               "callback_data": "adicionar_despesa"
+            }],
+            [{
+               "text": "📊 Listar Despesas do Mês",
+               "callback_data": "listar_gastos_mes"
+            }],
+            [{
+               "text": "🏷️ Listar Despesas por Categoria",
+               "callback_data": "listar_gastos_categoria"
+            }],
+            [{
+               "text": "📈 Despesas por Categoria no Mês",
+               "callback_data": "listar_gastos_categoria_mes"
+            }],
+            [{
+               "text": "📋 Ver Categorias",
+               "callback_data": "categorias"
+            }],
+            [{
+               "text": "🔙 Voltar ao Menu",
+               "callback_data": "ajuda"
+            }]
+         ]
+      }
+
+      sendMessage(id, `✅ *Despesa Adicionada com Sucesso!*\n\n*Descrição:* ${dadosIA.descricao.trim()}\n*Valor:* R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n*Categoria:* ${categoria}\n\n🤖 *Processado com IA*`, opcoes);
+
+      return true;
+   } catch (error) {
+      console.error("Erro ao processar despesa com IA: " + error.message);
+      return false;
    }
 }
 
